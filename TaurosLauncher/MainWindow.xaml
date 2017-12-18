@@ -1,0 +1,15 @@
+﻿<Window x:Class="Launcher.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Launcher"
+        mc:Ignorable="d"
+        Title="Launcher" Width="320" WindowStartupLocation="CenterScreen" SizeToContent="Height" ResizeMode="NoResize">
+    <Grid>
+        <StackPanel Margin="5">
+            <TextBlock Margin="0,5,0,0" Text="Cerberus.Tauros C# Injector (2017-12-18)" HorizontalAlignment="Center" FontWeight="Bold"></TextBlock>
+            <Button Height="36" Margin="0,5" Content="Inject" Click="Inject_Click"></Button>
+        </StackPanel>
+    </Grid>
+</Window>
