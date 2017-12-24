@@ -85,7 +85,7 @@ namespace Hooks
 		}
 
 		NetvarManager::Instance()->CreateDatabase();
-		Container::Instance().Register(std::make_shared<SignatureHelper>());
+		Container::Instance().Register<SignatureHelper>();
 		//NetvarManager::Instance()->Dump(Utils::GetDllDir() + XorStr("netvar_dump.txt"));
 
 		g_pD3DDevice9Hook = make_unique<VFTableHook>(Container::Instance().Resolve<SignatureHelper>()->D3DDevice());
@@ -107,25 +107,25 @@ namespace Hooks
 	void FillContainer()
 	{
 		auto container = &Container::Instance();
-		container->Register(std::make_shared<AimAssist>());
-		container->Register(std::make_shared<AutoAccept>());
-		container->Register(std::make_shared<AutoPistol>());
-		container->Register(std::make_shared<BackTrack>());
-		container->Register(std::make_shared<Bhop>());
-		container->Register(std::make_shared<C4Timer>());
-		container->Register(std::make_shared<Chams>());
-		container->Register(std::make_shared<DamageInformer>());
-		container->Register(std::make_shared<DLights>());
-		container->Register(std::make_shared<ESP>());
-		container->Register(std::make_shared<GrayWalls>());
-		container->Register(std::make_shared<Hands>());
-		container->Register(std::make_shared<EventListener>());
-		container->Register(std::make_shared<NoFlash>());
-		container->Register(std::make_shared<NoSmoke>());
-		container->Register(std::make_shared<RankRevealer>());
-		container->Register(std::make_shared<RCS>());
-		container->Register(std::make_shared<SkinChanger>());
-		container->Register(std::make_shared<Trigger>());
+		container->Register<AimAssist>();
+		container->Register<AutoAccept>();
+		container->Register<AutoPistol>();
+		container->Register<BackTrack>();
+		container->Register<Bhop>();
+		container->Register<C4Timer>();
+		container->Register<Chams>();
+		container->Register<DamageInformer>();
+		container->Register<DLights>();
+		container->Register<ESP>();
+		container->Register<GrayWalls>();
+		container->Register<Hands>();
+		container->Register<EventListener>();
+		container->Register<NoFlash>();
+		container->Register<NoSmoke>();
+		container->Register<RankRevealer>();
+		container->Register<RCS>();
+		container->Register<SkinChanger>();
+		container->Register<Trigger>();
 	}
 
 	void Restore()
@@ -149,8 +149,8 @@ namespace Hooks
 	{
 		//Initializes the GUI and the renderer
 		ImGui_ImplDX9_Init(g_hWnd, pDevice);
-		Container::Instance().Register(std::make_shared<GUI>(pDevice));
-		Container::Instance().Register(std::make_shared<DrawManager>(pDevice));
+		Container::Instance().Register<GUI>(pDevice);
+		Container::Instance().Register<DrawManager>(pDevice);
 		Container::Instance().Resolve<DrawManager>()->CreateObjects(Container::Instance().Resolve<GUI>()->GetScale());
 		FillContainer();
 

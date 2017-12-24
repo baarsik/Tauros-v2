@@ -22,30 +22,31 @@ public:
 		return instance;
 	}
 
-	template<class T>
-	void Register(std::shared_ptr<T> ptr)
+	template<class T, class... Arg>
+	std::shared_ptr<T> Register(Arg... args)
 	{
 		auto typeId = &typeid(T);
+		auto ptr = std::make_shared<T>(args...);
 		Register(typeId->raw_name(), ptr);
+		return ptr;
 	}
 
 	template<class T>
-	void Register(const std::type_info* typeId, std::shared_ptr<T> ptr)
+	void Register(const std::type_info& typeId, std::shared_ptr<T> ptr)
 	{
-		if (!typeId)
-			throw std::runtime_error(XorStr("Invalid type id to register"));
-
-		Register(typeId->raw_name(), ptr);
+		Register(typeId.raw_name(), std::move(ptr));
 	}
 
 	template<class T>
 	void Register(const std::string& id, std::shared_ptr<T> ptr)
 	{
-		std::lock_guard<std::mutex> lock(m_mapMutex);
-		const auto iter = m_mapping.find(id);
+		while (!m_mapMutex.try_lock()) {}
+		const auto iter = m_map.find(id);
 
-		if (iter == m_mapping.end())
-			m_mapping[id] = ptr;
+		if (iter == m_map.end())
+			m_map[id] = ptr;
+
+		m_mapMutex.unlock();
 	}
 
 	template<class T>
@@ -56,22 +57,23 @@ public:
 	}
 
 	template<class T>
-	std::shared_ptr<T> Resolve(const std::type_info* typeId)
+	std::shared_ptr<T> Resolve(const std::type_info& typeId)
 	{
-		if (!typeId)
-			throw std::runtime_error(XorStr("Invalid type id to resolve"));
-
-		return Resolve<T>(typeId->raw_name());
+		return Resolve<T>(typeId.raw_name());
 	}
 
 	template<class T>
 	std::shared_ptr<T> Resolve(const std::string& id)
 	{
-		std::lock_guard<std::mutex> lock(m_mapMutex);
-		const auto iter = m_mapping.find(id);
+		while(!m_mapMutex.try_lock()) {}
 
-		if (iter != m_mapping.end())
-			return std::static_pointer_cast<T>(iter->second);
+		const auto iter = m_map.find(id);
+		if (iter != m_map.end())
+		{
+			auto ptr = std::static_pointer_cast<T>(iter->second);
+			m_mapMutex.unlock();
+			return std::move(ptr);
+		}
 
 		throw std::runtime_error(XorStr("Could not locate type in IoC"));
 	}
@@ -84,23 +86,20 @@ public:
 	}
 
 	template<class T>
-	bool Contains(const std::type_info* typeId)
+	bool Contains(const std::type_info& typeId)
 	{
-		if (!typeId)
-			return false;
-
-		return Contains<T>(typeId->raw_name());
+		return Contains<T>(typeId.raw_name());
 	}
 
 	template<class T>
 	bool Contains(const std::string& id)
 	{
 		std::lock_guard<std::mutex> lock(m_mapMutex);
-		return m_mapping.find(id) != m_mapping.end();
+		return m_map.find(id) != m_map.end();
 	}
 private:
 	Container() {};
-	std::map<std::string, std::shared_ptr<void>> m_mapping;
+	std::map<std::string, std::shared_ptr<void>> m_map;
 	std::mutex m_mapMutex;
 };
 
