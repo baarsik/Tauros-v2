@@ -16,13 +16,14 @@ namespace Options
 
 	// Aim (1) - AimAssist
 	bool g_bAimAssistEnabled = true;
-	const char* g_szAimAssistLockTarget[4] = {
+	const char* g_szAimAssistLockTarget[5] = {
 		"Disabled",
+		"+25% FOV",
 		"+50% FOV",
 		"+100% FOV",
 		"Full lock"
 	};
-	int g_iAimAssistLockTarget = 1;
+	int g_iAimAssistLockTarget = 2;
 	bool g_bAimAssistIgnoreObstacles = false;
 	bool g_bAimAssistAutoShoot = false;
 	bool g_bAimAssistLockMouse = false;

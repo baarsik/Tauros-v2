@@ -10,7 +10,7 @@ namespace Options
 
 	// Aim (1) - AimAssist
 	extern bool g_bAimAssistEnabled;
-	extern const char* g_szAimAssistLockTarget[4];
+	extern const char* g_szAimAssistLockTarget[5];
 	extern int g_iAimAssistLockTarget;
 	extern bool g_bAimAssistIgnoreObstacles;
 	extern bool g_bAimAssistAutoShoot;

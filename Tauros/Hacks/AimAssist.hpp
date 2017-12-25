@@ -17,32 +17,12 @@ public:
 
 	void OverrideMouseInput_Post(float* x, float* y)
 	{
+		if (!Options::g_bAimAssistEnabled)
+			return;
+
 		auto pLocal = C_CSPlayer::GetLocalPlayer();
-		if (!IsEnabled(pLocal))
-		{
-			m_pAimLockedTarget = nullptr;
-			return;
-		}
-
 		auto pWeapon = pLocal->GetActiveWeapon();
-		if (!pWeapon || pWeapon->IsKnife() || pWeapon->IsGrenade() || pWeapon->IsC4())
-		{
-			m_pAimLockedTarget = nullptr;
-			return;
-		}
-
-		if (!m_bIsAttacking && !Options::g_bAimAssistAutoShoot && !IsTriggerEnabled(pLocal, pWeapon))
-		{
-			m_pAimLockedTarget = nullptr;
-			return;
-		}
-
-		static auto emptyClip = false;
-		const auto nextAttackTime = pWeapon->NextPrimaryAttack() - Interfaces::GlobalVars()->curtime;
-		if (nextAttackTime >= 1.f || pWeapon->GetClip() == 0) emptyClip = true;
-		else if (nextAttackTime <= 0.1f) emptyClip = false;
-		const auto shouldBeScoped = Options::g_bAimAssistSniperScopedOnly && pWeapon->IsSniper();
-		if (emptyClip || shouldBeScoped && !pLocal->IsScoped())
+		if (!IsValidData(pLocal, pWeapon))
 		{
 			m_pAimLockedTarget = nullptr;
 			return;
@@ -51,39 +31,9 @@ public:
 		if (m_pAimLockedTarget != nullptr && !m_pAimLockedTarget->IsAlive())
 			m_pAimLockedTarget = nullptr;
 
-		auto bone = HEAD_0;
 		Vector qDelta;
-		const auto fov = pWeapon->IsPistol() ? Options::g_fAimAssistFovPistol : Options::g_fAimAssistFov;
-		while (true)
-		{
-			const auto pTarget = m_pAimLockedTarget == nullptr
-				? GetClosestPlayer(pLocal, fov, bone)
-				: Options::g_iAimAssistLockTarget == 1
-					? GetClosestPlayer(pLocal, fov * 1.5f, bone)
-					: Options::g_iAimAssistLockTarget == 2
-						? GetClosestPlayer(pLocal, fov * 2.f, bone)
-						: m_pAimLockedTarget;
-
-			if (pTarget && TraceBone(pLocal, pTarget, bone))
-			{
-				qDelta = GetDelta(pLocal, pTarget, bone);
-				if (Options::g_iAimAssistLockTarget > 0)
-					m_pAimLockedTarget = pTarget;
-
-				break;
-			}
-
-			if (bone == HEAD_0) bone = NECK_0;
-			else if (bone == NECK_0) bone = SPINE_3;
-			else if (bone == SPINE_3) bone = SPINE_2;
-			else if (bone == SPINE_2) bone = SPINE_1;
-			else if (bone == SPINE_1) bone = SPINE_0;
-			else
-			{
-				m_pAimLockedTarget = nullptr;
-				return;
-			}
-		}
+		if (!UpdateTarget(pLocal, pWeapon, qDelta))
+			return;
 
 		// Adjust cursor position (0.022f = no smoothing)
 		const auto xSmooth = pWeapon->IsPistol() ? Options::g_fAimAssistSmoothPistol : Options::g_fAimAssistSmooth;
@@ -102,11 +52,68 @@ private:
 	bool m_bIsAttacking;
 	C_CSPlayer* m_pAimLockedTarget;
 
-	static bool IsEnabled(C_CSPlayer* pLocal)
+	bool IsValidData(C_CSPlayer* pLocal, C_BaseCombatWeapon* pWeapon) const
 	{
-		return pLocal && Options::g_bAimAssistEnabled && pLocal->IsAlive();
+		if (!pLocal || !pLocal->IsAlive())
+			return false;
+
+		if (!pWeapon || pWeapon->IsKnife() || pWeapon->IsGrenade() || pWeapon->IsC4())
+			return false;
+
+		if (!m_bIsAttacking && !Options::g_bAimAssistAutoShoot && !IsTriggerEnabled(pLocal, pWeapon))
+			return false;
+
+		static auto emptyClip = false;
+		const auto nextAttackTime = pWeapon->NextPrimaryAttack() - Interfaces::GlobalVars()->curtime;
+		if (nextAttackTime >= 1.f || pWeapon->GetClip() == 0) emptyClip = true;
+		else if (nextAttackTime <= 0.1f) emptyClip = false;
+		const auto shouldBeScoped = Options::g_bAimAssistSniperScopedOnly && pWeapon->IsSniper();
+		if (emptyClip || shouldBeScoped && !pLocal->IsScoped())
+			return false;
+
+		return true;
 	}
 
+	bool UpdateTarget(C_CSPlayer* pLocal, C_BaseCombatWeapon* pWeapon, Vector& qDelta)
+	{
+		auto bone = HEAD_0;
+		const auto fov = pWeapon->IsPistol() ? Options::g_fAimAssistFovPistol : Options::g_fAimAssistFov;
+		while (true)
+		{
+			const auto pTarget = m_pAimLockedTarget == nullptr
+				? GetClosestPlayer(pLocal, fov, bone)
+				: Options::g_iAimAssistLockTarget == 1
+				? GetClosestPlayer(pLocal, fov * 1.25f, bone)
+				: Options::g_iAimAssistLockTarget == 2
+				? GetClosestPlayer(pLocal, fov * 1.5f, bone)
+				: Options::g_iAimAssistLockTarget == 3
+				? GetClosestPlayer(pLocal, fov * 2.f, bone)
+				: m_pAimLockedTarget;
+
+			if (pTarget && TraceBone(pLocal, pTarget, bone))
+			{
+				qDelta = GetDelta(pLocal, pTarget, bone);
+				if (Options::g_iAimAssistLockTarget > 0)
+					m_pAimLockedTarget = pTarget;
+
+				break;
+			}
+
+			if (bone == HEAD_0) bone = NECK_0;
+			else if (bone == NECK_0) bone = SPINE_3;
+			else if (bone == SPINE_3) bone = SPINE_2;
+			else if (bone == SPINE_2) bone = SPINE_1;
+			else if (bone == SPINE_1) bone = SPINE_0;
+			else
+			{
+				m_pAimLockedTarget = nullptr;
+				return false;
+			}
+		}
+		return true;
+	}
+
+	// Returns true if trigger is enabled and all requirements are met
 	static bool IsTriggerEnabled(C_CSPlayer* pLocal, C_BaseCombatWeapon* pWeapon)
 	{
 		const auto shouldBeScoped = Options::g_bTriggerSniperScopedOnly && pWeapon->IsSniper();
@@ -116,7 +123,7 @@ private:
 		return Options::g_bTriggerEnabled && Options::g_bTriggerAimSynergy && (GetAsyncKeyState(Options::KeysID[Options::g_iTriggerKey]) || Options::g_bTriggerAlwaysActive);
 	}
 
-	static bool TraceBone(C_CSPlayer* pLocal, C_CSPlayer* pTarget, ECSPlayerBones bone)
+	static bool TraceBone(C_CSPlayer* pLocal, C_CSPlayer* pTarget, const ECSPlayerBones bone)
 	{
 		if (Options::g_bAimAssistIgnoreObstacles)
 			return true;
