@@ -202,9 +202,9 @@ public:
 			ImGui::Checkbox(XorStr("Ignore smoke"), &Options::g_bAimAssistIgnoreSmoke);
 			ImGui::Checkbox(XorStr("Scope required (Sniper)"), &Options::g_bAimAssistSniperScopedOnly);
 			ImGui::Checkbox(XorStr("Distance based FOV"), &Options::g_bAimAssistDistanceBasedFov);
-			ImGui::SliderFloat(XorStr("FOV (Rifle)"), &Options::g_fAimAssistFov, 0.f, 60.f, XorStr("%.2f"));
+			ImGui::SliderFloat(XorStr("FOV (Rifle)"), &Options::g_fAimAssistFov, 0.f, 20.f, XorStr("%.2f"));
 			ImGui::SliderFloat(XorStr("Smooth (Rifle)"), &Options::g_fAimAssistSmooth, 0.022f, 1.5f, XorStr("%.4f"));
-			ImGui::SliderFloat(XorStr("FOV (Pistol)"), &Options::g_fAimAssistFovPistol, 0.f, 60.f, XorStr("%.2f"));
+			ImGui::SliderFloat(XorStr("FOV (Pistol)"), &Options::g_fAimAssistFovPistol, 0.f, 20.f, XorStr("%.2f"));
 			ImGui::SliderFloat(XorStr("Smooth (Pistol)"), &Options::g_fAimAssistSmoothPistol, 0.022f, 1.5f, XorStr("%.4f"));
 			ImGui::SliderFloat(XorStr("Vertical smooth multiplier"), &Options::g_fAimAssistVerticalSmoothMultiplier, 1.f, 5.f, XorStr("%.2f"));
 
@@ -271,7 +271,6 @@ public:
 			ImGui::Checkbox(XorStr("C4 explode timer"), &Options::g_bC4TimerEnabled);
 			ImGui::Checkbox(XorStr("Show damage"), &Options::g_bDamageInformerEnabled);
 			ImGui::Checkbox(XorStr("Gray walls"), &Options::g_bGrayWallsEnabled);
-			ImGui::Checkbox(XorStr("No smoke"), &Options::g_bNoSmokeEnabled);
 			ImGui::Checkbox(XorStr("No flash"), &Options::g_bNoFlashEnabled);
 			ImGui::SliderFloat(XorStr("Max flash"), &Options::g_fNoFlashAmount, 0.f, 100.f, XorStr("%.0f%%"));
 			ImGui::Combo(XorStr("Hands style"), &Options::g_iHandsDisplay, Options::g_szHandsDisplay, IM_ARRAYSIZE(Options::g_szHandsDisplay));

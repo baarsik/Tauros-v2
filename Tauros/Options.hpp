@@ -62,7 +62,6 @@ namespace Options
 	extern bool g_bC4TimerEnabled;
 	extern bool g_bDamageInformerEnabled;
 	extern bool g_bGrayWallsEnabled;
-	extern bool g_bNoSmokeEnabled;
 	extern bool g_bNoFlashEnabled;
 	extern float g_fNoFlashAmount;
 	extern const char* g_szHandsDisplay[3];

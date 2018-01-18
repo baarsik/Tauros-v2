@@ -23,7 +23,7 @@ namespace Options
 		"+100% FOV",
 		"Full lock"
 	};
-	int g_iAimAssistLockTarget = 2;
+	int g_iAimAssistLockTarget = 1;
 	bool g_bAimAssistIgnoreObstacles = false;
 	bool g_bAimAssistAutoShoot = false;
 	bool g_bAimAssistLockMouse = false;
@@ -74,7 +74,6 @@ namespace Options
 	bool g_bC4TimerEnabled = true;
 	bool g_bDamageInformerEnabled = true;
 	bool g_bGrayWallsEnabled = false;
-	bool g_bNoSmokeEnabled = false;
 	bool g_bNoFlashEnabled = false;
 	float g_fNoFlashAmount = 30.0f;
 	const char* g_szHandsDisplay[3] = {

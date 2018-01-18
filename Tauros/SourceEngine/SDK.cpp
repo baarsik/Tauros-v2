@@ -205,12 +205,3 @@ CPrediction* Interfaces::Prediction()
 	}
 	return m_pPrediction;
 }
-CViewRender* Interfaces::ViewRender()
-{
-	if (!m_pViewRender)
-	{
-		// Backup: "A1 ? ? ? ? B9 ? ? ? ? C7 05 ? ? ? ? ? ? ? ? FF 10" + 1
-		m_pViewRender = **reinterpret_cast<CViewRender***>(Utils::FindSignature(XorStr("client.dll"), XorStr("FF 50 14 E8 ? ? ? ? 5D")) - 7);
-	}
-	return m_pViewRender;
-}

@@ -21,39 +21,6 @@ public:
 			*pLocal->FlashMaxAlpha() = 255.0f;
 	}
 };
-class NoSmoke
-{
-public:
-	NoSmoke()
-	{
-		m_vecSmokeMaterials = {
-			"particle/vistasmokev1/vistasmokev1_fire",
-			"particle/vistasmokev1/vistasmokev1_smokegrenade",
-			"particle/vistasmokev1/vistasmokev1_emods",
-			"particle/vistasmokev1/vistasmokev1_emods_impactdust"
-		};
-	}
-
-	void RenderSmokeOverlay_Pre(bool unk) const
-	{
-		if (!Options::g_bNoSmokeEnabled)
-			Hooks::g_fnOriginalRenderSmokeOverlay(Interfaces::ViewRender(), unk);
-	}
-
-	void FrameStageNotify_Pre(ClientFrameStage_t stage) const
-	{
-		if (stage != ClientFrameStage_t::FRAME_NET_UPDATE_POSTDATAUPDATE_END)
-			return;
-
-		for (auto materialName : m_vecSmokeMaterials)
-		{
-			auto mat = Interfaces::MaterialSystem()->FindMaterial(materialName, XorStr(TEXTURE_GROUP_OTHER));
-			mat->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, Options::g_bNoSmokeEnabled);
-		}
-	}
-private:
-	std::vector<const char*> m_vecSmokeMaterials;
-};
 
 class Hands
 {

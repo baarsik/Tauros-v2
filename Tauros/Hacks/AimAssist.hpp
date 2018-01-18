@@ -67,6 +67,7 @@ private:
 		const auto nextAttackTime = pWeapon->NextPrimaryAttack() - Interfaces::GlobalVars()->curtime;
 		if (nextAttackTime >= 1.f || pWeapon->GetClip() == 0) emptyClip = true;
 		else if (nextAttackTime <= 0.1f) emptyClip = false;
+
 		const auto shouldBeScoped = Options::g_bAimAssistSniperScopedOnly && pWeapon->IsSniper();
 		if (emptyClip || shouldBeScoped && !pLocal->IsScoped())
 			return false;

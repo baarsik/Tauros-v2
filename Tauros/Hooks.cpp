@@ -53,7 +53,6 @@ namespace Hooks
 	unique_ptr<VFTableHook>            g_pDrawModelExecuteHook = nullptr;
 	unique_ptr<VFTableHook>            g_pEventManagerHook = nullptr;
 	unique_ptr<VFTableHook>            g_pMaterialSystemHook = nullptr;
-	unique_ptr<VFTableHook>            g_pViewRenderHook = nullptr;
 
 	EndScene_t                         g_fnOriginalEndScene = nullptr;
 	Reset_t                            g_fnOriginalReset = nullptr;
@@ -61,14 +60,10 @@ namespace Hooks
 	PlaySound_t                        g_fnOriginalPlaySound = nullptr;
 	PaintTraverse_t                    g_fnOriginalPaintTraverse = nullptr;
 	FrameStageNotify_t                 g_fnOriginalFrameStageNotify = nullptr;
-	DispatchUserMessage_t              g_fnOriginalDispatchUserMessage = nullptr;
 	OverrideView_t                     g_fnOriginalOverrideView = nullptr;
 	DrawModelExecute_t                 g_fnOriginalDrawModelExecute = nullptr;
 	OverrideMouseInput_t               g_fnOriginalOverrideMouseInput = nullptr;
 	OverrideConfig_t                   g_fnOriginalOverrideConfig = nullptr;
-	RenderSmokeOverlay_t               g_fnOriginalRenderSmokeOverlay = nullptr;
-	RenderView_t                       g_fnOriginalRenderView = nullptr;
-	DoPostScreenEffects_t              g_fnOriginalDoPostScreenEffects = nullptr;
 
 	WNDPROC                            g_pOldWindowProc = nullptr;
 
@@ -96,7 +91,6 @@ namespace Hooks
 		g_pModelRenderHook = make_unique<VFTableHook>(Interfaces::ModelRender());
 		g_pEventManagerHook = make_unique<VFTableHook>(Interfaces::EventManager());
 		g_pMaterialSystemHook = make_unique<VFTableHook>(Interfaces::MaterialSystem());
-		g_pViewRenderHook = make_unique<VFTableHook>(Interfaces::ViewRender());
 
 		g_pOldWindowProc = reinterpret_cast<WNDPROC>(SetWindowLongPtr(g_hWnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(Hooked_WndProc)));
 
@@ -121,7 +115,6 @@ namespace Hooks
 		container->Register<Hands>();
 		container->Register<EventListener>();
 		container->Register<NoFlash>();
-		container->Register<NoSmoke>();
 		container->Register<RankRevealer>();
 		container->Register<RCS>();
 		container->Register<SkinChanger>();
@@ -143,6 +136,7 @@ namespace Hooks
 		g_pVGUIPanelHook->RestoreTable();
 		g_pModelRenderHook->RestoreTable();
 		g_pEventManagerHook->RestoreTable();
+		g_pMaterialSystemHook->RestoreTable();
     }
 
 	void GUI_Init(IDirect3DDevice9* pDevice)
@@ -156,16 +150,12 @@ namespace Hooks
 
 		g_fnOriginalCreateMove = g_pClientHook->Hook(21, reinterpret_cast<CreateMove_t>(Hooked_CreateMove_Proxy));                          // IBaseClientDLL::CreateMove
 		g_fnOriginalFrameStageNotify = g_pClientHook->Hook(36, reinterpret_cast<FrameStageNotify_t>(Hooked_FrameStageNotify));              // IBaseClientDLL::FrameStageNotify
-		g_fnOriginalDispatchUserMessage = g_pClientHook->Hook(37, reinterpret_cast<DispatchUserMessage_t>(Hooked_DispatchUserMessage));     // IBaseClientDLL::DispatchUserMessage
 		g_fnOriginalOverrideView = g_pClientModeHook->Hook(18, reinterpret_cast<OverrideView_t>(Hooked_OverrideView));                      // IClientMode::OverrideView
 		g_fnOriginalOverrideMouseInput = g_pClientModeHook->Hook(23, reinterpret_cast<OverrideMouseInput_t>(Hooked_OverrideMouseInput));    // IClientMode::OverrideMouseInput
-		g_fnOriginalDoPostScreenEffects = g_pClientModeHook->Hook(44, reinterpret_cast<DoPostScreenEffects_t>(Hooked_DoPostScreenEffects)); // IClientMode::DoPostScreenEffects
 		g_fnOriginalOverrideConfig = g_pMaterialSystemHook->Hook(21, reinterpret_cast<OverrideConfig_t>(Hooked_OverrideConfig));            // IMaterialSystem::OverrideConfig
 		g_fnOriginalPaintTraverse = g_pVGUIPanelHook->Hook(41, reinterpret_cast<PaintTraverse_t>(Hooked_PaintTraverse));                    // IPanel::PaintTraverse
 		g_fnOriginalPlaySound = g_pMatSurfaceHook->Hook(82, reinterpret_cast<PlaySound_t>(Hooked_PlaySound));                               // ISurface::PlaySound
 		g_fnOriginalDrawModelExecute = g_pModelRenderHook->Hook(21, reinterpret_cast<DrawModelExecute_t>(Hooked_DrawModelExecute));         // IVModelRender::DrawModelExecute
-		g_fnOriginalRenderView = g_pViewRenderHook->Hook(6, reinterpret_cast<RenderView_t>(Hooked_RenderView));                             // CViewRender::RenderView
-		g_fnOriginalRenderSmokeOverlay = g_pViewRenderHook->Hook(40, reinterpret_cast<RenderSmokeOverlay_t>(Hooked_RenderSmokeOverlay));    // CViewRender::RenderSmokeOverlay
 
 		g_bWasInitialized = true;
 	}
@@ -284,13 +274,13 @@ namespace Hooks
 		return CallWindowProc(g_pOldWindowProc, hWnd, uMsg, wParam, lParam);
 	}
 
-	void __stdcall Hooked_CreateMove(int sequence_number, float input_sample_frametime, bool active, bool& bSendPacket)
+	void __stdcall Hooked_CreateMove(int sequenceNumber, float inputSampleFrametime, bool active, bool& bSendPacket)
 	{
-		g_fnOriginalCreateMove(Interfaces::Client(), sequence_number, input_sample_frametime, active);
+		g_fnOriginalCreateMove(Interfaces::Client(), sequenceNumber, inputSampleFrametime, active);
 		const auto pLocal = C_CSPlayer::GetLocalPlayer();
 
-		const auto pCmd = Interfaces::Input()->GetUserCmd(sequence_number);
-		auto verified = Interfaces::Input()->GetVerifiedUserCmd(sequence_number);
+		const auto pCmd = Interfaces::Input()->GetUserCmd(sequenceNumber);
+		auto verified = Interfaces::Input()->GetVerifiedUserCmd(sequenceNumber);
 
 		if (!pCmd || !verified)
 			return;
@@ -312,7 +302,7 @@ namespace Hooks
 		verified->m_crc = pCmd->GetChecksum();
 	}
 
-	__declspec(naked) void __stdcall Hooked_CreateMove_Proxy(int sequence_number, float input_sample_frametime, bool active)
+	__declspec(naked) void __stdcall Hooked_CreateMove_Proxy(int sequenceNumber, float inputSampleFrametime, bool active)
 	{
 		__asm
 		{
@@ -322,8 +312,8 @@ namespace Hooks
 			lea  ecx, [esp]
 			push ecx
 			push dword ptr[active]
-			push dword ptr[input_sample_frametime]
-			push dword ptr[sequence_number]
+			push dword ptr[inputSampleFrametime]
+			push dword ptr[sequenceNumber]
 			call Hooks::Hooked_CreateMove
 			pop  ebx
 			pop  ebp
@@ -333,7 +323,6 @@ namespace Hooks
 
 	void __stdcall Hooked_FrameStageNotify(ClientFrameStage_t stage)
 	{
-		Container::Instance().Resolve<NoSmoke>()->FrameStageNotify_Pre(stage);
 		Container::Instance().Resolve<NoFlash>()->FrameStageNotify_Pre(stage);
 		Container::Instance().Resolve<RCS>()->FrameStageNotify_Pre(stage);
 		Container::Instance().Resolve<SkinChanger>()->FrameStageNotify_Pre(stage);
@@ -342,11 +331,6 @@ namespace Hooks
 
 		Container::Instance().Resolve<RCS>()->FrameStageNotify_Post(stage);
 		Container::Instance().Resolve<BackTrack>()->FrameStageNotify_Post(stage);
-	}
-	
-	void __stdcall Hooked_DispatchUserMessage(ECstrike15UserMessages type, unsigned int a3, unsigned int length, const void* msgData)
-	{
-		g_fnOriginalDispatchUserMessage(Interfaces::Client(), type, a3, length, msgData);
 	}
 
 	void __stdcall Hooked_OverrideView(CViewSetup* pViewSetup)
@@ -384,20 +368,5 @@ namespace Hooks
 		g_fnOriginalPlaySound(Interfaces::MatSurface(), szFileName);
 
 		Container::Instance().Resolve<AutoAccept>()->PlaySound_Post(szFileName);
-	}
-
-	void __stdcall Hooked_RenderSmokeOverlay(bool unk)
-	{
-		Container::Instance().Resolve<NoSmoke>()->RenderSmokeOverlay_Pre(unk);
-	}
-
-	void __stdcall Hooked_RenderView(CViewSetup &view, CViewSetup &hud, int nClearFlags, int whatToDraw)
-	{
-		g_fnOriginalRenderView(Interfaces::ViewRender(), view, hud, nClearFlags, whatToDraw);
-	}
-
-	int __stdcall Hooked_DoPostScreenEffects(int unk)
-	{
-		return g_fnOriginalDoPostScreenEffects(Interfaces::ClientMode(), unk);
 	}
 }

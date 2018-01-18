@@ -23,7 +23,7 @@ public:
 
 		int width, height;
 		Interfaces::MatSurface()->GetScreenSize(width, height);
-		const auto textSize1 = GetTextSize(XorStr("EXPLODE IN"));
+		const auto textSize1 = GetTextSize(XorStr("EXPLODES IN"));
 		const auto textSize2 = GetTextSizeHeavy(std::to_string(m_iTimeLeft).c_str());
 		const auto x1 = width - 140 * m_pGui->GetScale();
 		const auto y1 = static_cast<int>(height / 1.5f) - 15 * m_pGui->GetScale() - (textSize1.height + textSize2.height) / 2;
@@ -34,7 +34,7 @@ public:
 		Interfaces::MatSurface()->DrawFilledRect(int(x1), int(y1), int(x2), int(y2));
 		auto x = (x1 + x2) / 2;
 		auto y = y1 + 10 * m_pGui->GetScale();
-		DrawString(int(x), int(y), 255, 255, 255, 255, XorStr("EXPLODE IN"));
+		DrawString(int(x), int(y), 255, 255, 255, 255, XorStr("EXPLODES IN"));
 		y += textSize1.height + 10 * m_pGui->GetScale();
 		int r, g, b;
 		if (m_bIsDefused) { r = 0; g = 255; b = 0; }
@@ -77,9 +77,9 @@ private:
 	int m_iTimeLeft;
 	float m_flExplodesIn;
 
-	FontSize GetTextSize(const char* pszText) const
+	FontSize GetTextSize(const char* szText) const
 	{
-		if (pszText == nullptr)
+		if (szText == nullptr)
 			return FontSize{ -1, -1 };
 
 		static HFont font;
@@ -97,14 +97,14 @@ private:
 
 		int width, height;
 		wchar_t szString[64];
-		MultiByteToWideChar(CP_UTF8, 0, pszText, -1, szString, 64);
+		MultiByteToWideChar(CP_UTF8, 0, szText, -1, szString, 64);
 		Interfaces::MatSurface()->GetTextSize(font, szString, width, height);
 		return FontSize { width, height };
 	}
 
-	FontSize GetTextSizeHeavy(const char* pszText) const
+	FontSize GetTextSizeHeavy(const char* szText) const
 	{
-		if (pszText == nullptr)
+		if (szText == nullptr)
 			return FontSize{ -1, -1 };
 
 		static HFont font;
@@ -122,18 +122,18 @@ private:
 
 		int width, height;
 		wchar_t szString[64];
-		MultiByteToWideChar(CP_UTF8, 0, pszText, -1, szString, 64);
+		MultiByteToWideChar(CP_UTF8, 0, szText, -1, szString, 64);
 		Interfaces::MatSurface()->GetTextSize(font, szString, width, height);
 		return FontSize{ width, height };
 	}
 
-	FontSize DrawString(int x, int y, int r, int g, int b, int a, const char* pszText) const
+	FontSize DrawString(int x, int y, int r, int g, int b, int a, const char* szText) const
 	{
-		if (pszText == nullptr)
+		if (szText == nullptr)
 			return FontSize{ -1, -1 };
 
 		wchar_t szString[64];
-		MultiByteToWideChar(CP_UTF8, 0, pszText, -1, szString, 64);
+		MultiByteToWideChar(CP_UTF8, 0, szText, -1, szString, 64);
 
 		static HFont font;
 		static auto fontInitialized = false;
@@ -157,13 +157,13 @@ private:
 		return FontSize{ width, height };
 	}
 
-	FontSize DrawStringHeavy(int x, int y, int r, int g, int b, int a, const char* pszText) const
+	FontSize DrawStringHeavy(int x, int y, int r, int g, int b, int a, const char* szText) const
 	{
-		if (pszText == nullptr)
+		if (szText == nullptr)
 			return FontSize{ -1, -1 };
 
 		wchar_t szString[64];
-		MultiByteToWideChar(CP_UTF8, 0, pszText, -1, szString, 64);
+		MultiByteToWideChar(CP_UTF8, 0, szText, -1, szString, 64);
 
 		static HFont font;
 		static auto fontInitialized = false;
