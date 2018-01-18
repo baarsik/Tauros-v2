@@ -4,8 +4,9 @@ class AimAssist
 {
 public:
 
-	explicit AimAssist()
+	AimAssist()
 	{
+		m_pSignatureHelper = Container::Instance().Resolve<SignatureHelper>();
 		m_bIsAttacking = false;
 		m_pAimLockedTarget = nullptr;
 	}
@@ -49,6 +50,7 @@ public:
 		*static_cast<float*>(y) = vDelta.y;
 	}
 private:
+	std::shared_ptr<SignatureHelper> m_pSignatureHelper;
 	bool m_bIsAttacking;
 	C_CSPlayer* m_pAimLockedTarget;
 
@@ -124,7 +126,7 @@ private:
 		return Options::g_bTriggerEnabled && Options::g_bTriggerAimSynergy && (GetAsyncKeyState(Options::KeysID[Options::g_iTriggerKey]) || Options::g_bTriggerAlwaysActive);
 	}
 
-	static bool TraceBone(C_CSPlayer* pLocal, C_CSPlayer* pTarget, const ECSPlayerBones bone)
+	bool TraceBone(C_CSPlayer* pLocal, C_CSPlayer* pTarget, const ECSPlayerBones bone) const
 	{
 		if (Options::g_bAimAssistIgnoreObstacles)
 			return true;
@@ -144,7 +146,7 @@ private:
 			return false;
 
 		const auto vTraceEndPos = trace.endpos;
-		if (!Options::g_bAimAssistIgnoreSmoke && Container::Instance().Resolve<SignatureHelper>()->LineThroughSmoke(vEyePos, vTraceEndPos))
+		if (!Options::g_bAimAssistIgnoreSmoke && m_pSignatureHelper->LineThroughSmoke(vEyePos, vTraceEndPos))
 			return false;
 
 		auto target = static_cast<C_CSPlayer*>(trace.m_pEnt);

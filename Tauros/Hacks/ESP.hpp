@@ -10,6 +10,7 @@ public:
 	{
 		m_pDrawManager = Container::Instance().Resolve<DrawManager>();
 		m_pGUI = Container::Instance().Resolve<GUI>();
+		m_pSignatureHelper = Container::Instance().Resolve<SignatureHelper>();
 	}
 
 	void EndScene_Pre(IDirect3DDevice9* pDevice)
@@ -24,6 +25,7 @@ public:
 private:
 	std::shared_ptr<DrawManager> m_pDrawManager;
 	std::shared_ptr<GUI> m_pGUI;
+	std::shared_ptr<SignatureHelper> m_pSignatureHelper;
 	matrix3x4_t m_pBoneToWorldOut[128];
 
 	void PlayerESP(IDirect3DDevice9* pDevice, C_CSPlayer* pLocal)
@@ -50,10 +52,10 @@ private:
 				vHead.z += 15.0f;
 
 				Vector vScreenOrigin, vScreenHead;
-				if (!Container::Instance().Resolve<SignatureHelper>()->WorldToScreen(vHead, vScreenHead))
+				if (!m_pSignatureHelper->WorldToScreen(vHead, vScreenHead))
 					continue;
 
-				if (!Container::Instance().Resolve<SignatureHelper>()->WorldToScreen(vOrigin, vScreenOrigin))
+				if (!m_pSignatureHelper->WorldToScreen(vOrigin, vScreenOrigin))
 					continue;
 
 				RenderHealth(pDevice, pLocal, pTarget, vScreenHead, vScreenOrigin);
@@ -180,12 +182,12 @@ private:
 
 				Vector vBonePos1;
 				auto hitbox = m_pBoneToWorldOut[i];
-				if (!Container::Instance().Resolve<SignatureHelper>()->WorldToScreen(Vector(hitbox[0][3], hitbox[1][3], hitbox[2][3]), vBonePos1))
+				if (!m_pSignatureHelper->WorldToScreen(Vector(hitbox[0][3], hitbox[1][3], hitbox[2][3]), vBonePos1))
 					continue;
 
 				Vector vBonePos2;
 				hitbox = m_pBoneToWorldOut[pBone->parent];
-				if (!Container::Instance().Resolve<SignatureHelper>()->WorldToScreen(Vector(hitbox[0][3], hitbox[1][3], hitbox[2][3]), vBonePos2))
+				if (!m_pSignatureHelper->WorldToScreen(Vector(hitbox[0][3], hitbox[1][3], hitbox[2][3]), vBonePos2))
 					continue;
 
 				const auto color = isEnemy

@@ -3,6 +3,11 @@
 class Trigger
 {
 public:
+	Trigger()
+	{
+		m_pSignatureHelper = Container::Instance().Resolve<SignatureHelper>();
+	}
+
 	void CreateMove_Post(C_CSPlayer* pLocal, CUserCmd* pCmd) const
 	{
 		if (!IsEnabled(pLocal))
@@ -21,6 +26,8 @@ public:
 			pCmd->buttons |= IN_ATTACK;
 	}
 private:
+	std::shared_ptr<SignatureHelper> m_pSignatureHelper;
+
 	void AutoPistol(C_CSPlayer* pLocal, C_BaseCombatWeapon* pWeapon, CUserCmd* pCmd) const
 	{
 		// Let AutoPistol class handle this situation
@@ -85,7 +92,7 @@ private:
 		if (!target || !target->IsAlive() || target->GetHealth() < 1 || target->IsImmune())
 			return false;
 
-		if (!Options::g_bTriggerIgnoreSmoke && Container::Instance().Resolve<SignatureHelper>()->LineThroughSmoke(vTraceStart, trace.endpos))
+		if (!Options::g_bTriggerIgnoreSmoke && m_pSignatureHelper->LineThroughSmoke(vTraceStart, trace.endpos))
 			return false;
 
 		if (target && target->GetTeamNum() == pLocal->GetTeamNum() && !Options::g_bDeathmatch)
