@@ -8,10 +8,10 @@ public:
 		if (!IsValid(pLocal))
 			return true;
 
-		const auto punchAngles = *pLocal->AimPunch() * 2.0f;
-		if (punchAngles.x != 0.0f || punchAngles.y != 0)
+		const auto punchAngles = *pLocal->AimPunch() * 2.f;
+		if (punchAngles.x != 0 || punchAngles.y != 0)
 		{
-			pCmd->viewangles -= punchAngles;
+			pCmd->viewangles -= punchAngles * GetFailureAmount();
 			Utils::Clamp(pCmd->viewangles);
 			return false;
 		}
@@ -23,7 +23,7 @@ public:
 		if (!IsValid(pLocal))
 			return;
 
-		pViewSetup->angles -= *pLocal->AimPunch() * 2.0f * 0.45f;
+		pViewSetup->angles -= *pLocal->AimPunch() * 2.f * 0.45f;
 		Utils::Clamp(pViewSetup->angles);
 	}
 	void FrameStageNotify_Pre(ClientFrameStage_t stage)
@@ -61,6 +61,16 @@ public:
 private:
 	Vector m_vAimPunchOld;
 	Vector m_vViewPunchOld;
+
+	float GetFailureAmount() const
+	{
+		if (Options::g_fAimAssistRCSFailureChance < rand() % 100)
+			return 1.f;
+
+		return rand() % 2 == 1
+			? 1 + Options::g_fAimAssistRCSFailureAmount / 100.f
+			: 1 -Options::g_fAimAssistRCSFailureAmount / 100.f;
+	}
 
 	bool IsValid(C_CSPlayer* pLocal) const
 	{

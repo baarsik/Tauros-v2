@@ -9,7 +9,12 @@ namespace Options
 	extern bool g_bDeathmatch;
 
 	// Aim (1) - AimAssist
-	extern bool g_bAimAssistEnabled;
+	extern const char* g_szAimAssistType[3];
+	extern int g_iAimAssistType;
+	extern float g_fAimAssistType2AcceleratePercentage;
+	extern float g_fAimAssistType2DirectionPenalty;
+	extern float g_fAimAssistType2DirectionBoost;
+	extern float g_fAimAssistType2FovBoost;
 	extern const char* g_szAimAssistLockTarget[5];
 	extern int g_iAimAssistLockTarget;
 	extern bool g_bAimAssistIgnoreObstacles;
@@ -23,6 +28,8 @@ namespace Options
 	extern float g_fAimAssistFovPistol;
 	extern float g_fAimAssistSmoothPistol;
 	extern float g_fAimAssistVerticalSmoothMultiplier;
+	extern float g_fAimAssistRCSFailureChance;
+	extern float g_fAimAssistRCSFailureAmount;
 	// Aim (2) - Trigger
 	extern bool g_bTriggerEnabled;
 	extern int g_iTriggerKey;

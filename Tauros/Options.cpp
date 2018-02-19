@@ -15,7 +15,16 @@ namespace Options
 	bool g_bDeathmatch = false;
 
 	// Aim (1) - AimAssist
-	bool g_bAimAssistEnabled = true;
+	const char* g_szAimAssistType[3] = {
+		"Disabled",
+		"Accelerate",
+		"Decelerate"
+	};
+	int g_iAimAssistType = 2;
+	float g_fAimAssistType2AcceleratePercentage = 5.f;
+	float g_fAimAssistType2DirectionPenalty = 25.f;
+	float g_fAimAssistType2DirectionBoost = 25.f;
+	float g_fAimAssistType2FovBoost = 400.f;
 	const char* g_szAimAssistLockTarget[5] = {
 		"Disabled",
 		"+25% FOV",
@@ -35,6 +44,8 @@ namespace Options
 	float g_fAimAssistFovPistol = 1.2f;
 	float g_fAimAssistSmoothPistol = 0.25f;
 	float g_fAimAssistVerticalSmoothMultiplier = 1.75f;
+	float g_fAimAssistRCSFailureChance = 10.0f;
+	float g_fAimAssistRCSFailureAmount = 15.0f;
 	// Aim (2) - Trigger
 	bool g_bTriggerEnabled = true;
 	int g_iTriggerKey = 10;

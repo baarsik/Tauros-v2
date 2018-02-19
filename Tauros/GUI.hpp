@@ -193,12 +193,22 @@ public:
 		{
 			ImGui::Columns(3, nullptr, false);
 			DrawSpecialText(XorStr("Aim Assist"), XorStr(""));
-			ImGui::Checkbox(XorStr("Enabled"), &Options::g_bAimAssistEnabled);
+			ImGui::Combo(XorStr("Type"), &Options::g_iAimAssistType, Options::g_szAimAssistType, IM_ARRAYSIZE(Options::g_szAimAssistType));
+			if (Options::g_iAimAssistType == 2)
+			{
+				ImGui::SliderFloat(XorStr("Accelerate percentage"), &Options::g_fAimAssistType2AcceleratePercentage, 0.f, 100.f, XorStr("%.0f%%"));
+				ImGui::SliderFloat(XorStr("Right direction boost"), &Options::g_fAimAssistType2DirectionBoost, 0.f, 100.f, XorStr("%.0f%%"));
+				ImGui::SliderFloat(XorStr("Wrong direction penalty"), &Options::g_fAimAssistType2DirectionPenalty, 0.f, 100.f, XorStr("%.0f%%"));
+				ImGui::SliderFloat(XorStr("FOV boost"), &Options::g_fAimAssistType2FovBoost, 0.f, 600.f, XorStr("%.0f%%"));
+			}
 			ImGui::Checkbox(XorStr("Deathmatch"), &Options::g_bDeathmatch);
 			ImGui::Combo(XorStr("Lock target"), &Options::g_iAimAssistLockTarget, Options::g_szAimAssistLockTarget, IM_ARRAYSIZE(Options::g_szAimAssistLockTarget));
 			ImGui::Checkbox(XorStr("Ignore obstacles"), &Options::g_bAimAssistIgnoreObstacles);
-			ImGui::Checkbox(XorStr("Auto aim"), &Options::g_bAimAssistAutoShoot);
-			ImGui::Checkbox(XorStr("Lock mouse"), &Options::g_bAimAssistLockMouse);
+			if (Options::g_iAimAssistType != 2)
+			{
+				ImGui::Checkbox(XorStr("Auto aim"), &Options::g_bAimAssistAutoShoot);
+				ImGui::Checkbox(XorStr("Lock mouse"), &Options::g_bAimAssistLockMouse);
+			}
 			ImGui::Checkbox(XorStr("Ignore smoke"), &Options::g_bAimAssistIgnoreSmoke);
 			ImGui::Checkbox(XorStr("Scope required (Sniper)"), &Options::g_bAimAssistSniperScopedOnly);
 			ImGui::Checkbox(XorStr("Distance based FOV"), &Options::g_bAimAssistDistanceBasedFov);
@@ -207,6 +217,8 @@ public:
 			ImGui::SliderFloat(XorStr("FOV (Pistol)"), &Options::g_fAimAssistFovPistol, 0.f, 20.f, XorStr("%.2f"));
 			ImGui::SliderFloat(XorStr("Smooth (Pistol)"), &Options::g_fAimAssistSmoothPistol, 0.022f, 1.5f, XorStr("%.4f"));
 			ImGui::SliderFloat(XorStr("Vertical smooth multiplier"), &Options::g_fAimAssistVerticalSmoothMultiplier, 1.f, 5.f, XorStr("%.2f"));
+			ImGui::SliderFloat(XorStr("RCS failure chance"), &Options::g_fAimAssistRCSFailureChance, 0.f, 35.f, XorStr("%.0f%%"));
+			ImGui::SliderFloat(XorStr("RCS failure amount"), &Options::g_fAimAssistRCSFailureAmount, 1.f, 60.f, XorStr("%.0f%%"));
 
 			ImGui::NextColumn();
 			DrawSpecialText(XorStr("Trigger Bot"), XorStr(""));

@@ -1,9 +1,9 @@
 #pragma once
+#include "SkinChanger.hpp"
 
 class AimAssist
 {
 public:
-
 	AimAssist()
 	{
 		m_pSignatureHelper = Container::Instance().Resolve<SignatureHelper>();
@@ -18,7 +18,7 @@ public:
 
 	void OverrideMouseInput_Post(float* x, float* y)
 	{
-		if (!Options::g_bAimAssistEnabled)
+		if (Options::g_iAimAssistType == 0)
 			return;
 
 		auto pLocal = C_CSPlayer::GetLocalPlayer();
@@ -42,8 +42,32 @@ public:
 		qDelta.x /= xSmooth >= 0.022f ? xSmooth : 0.022f;
 		qDelta.y /= ySmooth >= 0.022f ? ySmooth : 0.022f;
 
-		auto vMouse = Options::g_bAimAssistLockMouse ? Vector(0, 0, 0) : Vector(*static_cast<float*>(x), *static_cast<float*>(y), 0.0f);
+		auto vMouse = Options::g_bAimAssistLockMouse && Options::g_iAimAssistType != 2
+			? Vector(0, 0, 0)
+			: Vector(*static_cast<float*>(x), *static_cast<float*>(y), 0.0f);
+
 		auto vDelta = Vector(qDelta.y, -qDelta.x, 0.0f);
+
+		// Slow down if going wrong, accelerate if going right
+		// 'Hacky' acceleration should be greatly reduced
+		if (Options::g_iAimAssistType == 2)
+		{
+			const auto penalty = 1 - Options::g_fAimAssistType2DirectionPenalty / 100.f;
+			const auto boost = 1 + Options::g_fAimAssistType2DirectionBoost / 100.f;
+
+			if (vMouse.x > 0 && vDelta.x < 0 || vMouse.x < 0 && vDelta.x > 0)
+				vMouse.x *= penalty;
+			else
+				vMouse.x *= boost;
+
+			if (vMouse.y > 0 && vDelta.y < 0 || vMouse.y < 0 && vDelta.y > 0)
+				vMouse.y *= penalty;
+			else
+				vMouse.x *= boost;
+
+			vDelta *= Options::g_fAimAssistType2AcceleratePercentage / 100.f;
+		}
+
 		vDelta.x = (vDelta.x + vMouse.x) / 2.0f;
 		vDelta.y = (vDelta.y + vMouse.y) / 2.0f;
 		*static_cast<float*>(x) = vDelta.x;
@@ -62,7 +86,7 @@ private:
 		if (!pWeapon || pWeapon->IsKnife() || pWeapon->IsGrenade() || pWeapon->IsC4())
 			return false;
 
-		if (!m_bIsAttacking && !Options::g_bAimAssistAutoShoot && !IsTriggerEnabled(pLocal, pWeapon))
+		if (!m_bIsAttacking && (Options::g_iAimAssistType == 2 || !Options::g_bAimAssistAutoShoot) && !IsTriggerEnabled(pLocal, pWeapon))
 			return false;
 
 		static auto emptyClip = false;
@@ -80,7 +104,14 @@ private:
 	bool UpdateTarget(C_CSPlayer* pLocal, C_BaseCombatWeapon* pWeapon, Vector& qDelta)
 	{
 		auto bone = HEAD_0;
-		const auto fov = pWeapon->IsPistol() ? Options::g_fAimAssistFovPistol : Options::g_fAimAssistFov;
+		auto fov = pWeapon->IsPistol()
+			? Options::g_fAimAssistFovPistol
+			: Options::g_fAimAssistFov;
+
+		// Decelerate aim requires much higher FOV to be legit
+		if (Options::g_iAimAssistType == 2)
+			fov *= 1 + Options::g_fAimAssistType2FovBoost / 100.f;
+
 		while (true)
 		{
 			const auto pTarget = m_pAimLockedTarget == nullptr
@@ -117,7 +148,7 @@ private:
 	}
 
 	// Returns true if trigger is enabled and all requirements are met
-	static bool IsTriggerEnabled(C_CSPlayer* pLocal, C_BaseCombatWeapon* pWeapon)
+	bool IsTriggerEnabled(C_CSPlayer* pLocal, C_BaseCombatWeapon* pWeapon) const
 	{
 		const auto shouldBeScoped = Options::g_bTriggerSniperScopedOnly && pWeapon->IsSniper();
 		if (shouldBeScoped && !pLocal->IsScoped())
@@ -159,44 +190,77 @@ private:
 		return true;
 	}
 
-	static C_CSPlayer* GetClosestPlayer(C_CSPlayer* pLocal, float fov, ECSPlayerBones bone)
+	C_CSPlayer* GetClosestPlayer(C_CSPlayer* pLocal, float fov, ECSPlayerBones bone) const
 	{
 		C_CSPlayer* pTarget = nullptr;
 		auto maxFov = fov;
 
 		QAngle aimAngles;
 		Interfaces::Engine()->GetViewAngles(aimAngles);
-		if (!Options::g_bRCSEnabled)
-			aimAngles += *pLocal->AimPunch() * 2.f;
+		aimAngles += GetAimPunchCorrection(pLocal);
 
-		const auto vEyePos = pLocal->GetEyePos();
+		const auto eyePos = pLocal->GetEyePos();
 
 		for (auto i = 1; i <= Interfaces::Engine()->GetMaxClients(); i++)
 		{
-			auto pPotentialTarget = static_cast<C_CSPlayer*>(Interfaces::EntityList()->GetClientEntity(i));
-			if (!pPotentialTarget || pPotentialTarget == pLocal)
+			const auto pPotentialTarget = static_cast<C_CSPlayer*>(Interfaces::EntityList()->GetClientEntity(i));
+			
+			if (!IsTargetValid(pLocal, pPotentialTarget))
 				continue;
 
-			if (!pPotentialTarget->IsAlive() || pPotentialTarget->IsDormant() || pPotentialTarget->IsImmune())
-				continue;
-
-			if (pPotentialTarget->GetTeamNum() == pLocal->GetTeamNum() && !Options::g_bDeathmatch)
-				continue;
-
-			const auto vTargetBone = Utils::GetEntityBone(pPotentialTarget, bone);
-			const auto fTargetFov = Options::g_bAimAssistDistanceBasedFov
-				? GetFovFraction(aimAngles, Utils::CalcAngle(vEyePos, vTargetBone))
-				: GetFov(aimAngles, Utils::CalcAngle(vEyePos, vTargetBone));
-			if (fTargetFov > maxFov)
+			if (!IsTargetBetter(pPotentialTarget, aimAngles, eyePos, maxFov, bone))
 				continue;
 
 			pTarget = pPotentialTarget;
-			maxFov = fTargetFov;
 		}
 		return pTarget;
 	}
 
-	static Vector GetDelta(C_CSPlayer* pLocal, C_CSPlayer* pTarget, ECSPlayerBones bone)
+	bool IsTargetValid(C_CSPlayer* pLocal, C_CSPlayer* pTarget) const
+	{
+		if (!pTarget || pTarget == pLocal)
+			return false;
+
+		if (!pTarget->IsAlive() || pTarget->IsDormant() || pTarget->IsImmune())
+			return false;
+
+		if (pTarget->GetTeamNum() == pLocal->GetTeamNum() && !Options::g_bDeathmatch)
+			return false;
+
+		return true;
+	}
+
+	bool IsTargetBetter(C_CSPlayer* pPotentialTarget, Vector aimAngles, Vector eyePos, float& maxFov, ECSPlayerBones bone) const
+	{
+		const auto vTargetBone = Utils::GetEntityBone(pPotentialTarget, bone);
+		const auto fTargetFov = Options::g_bAimAssistDistanceBasedFov
+			? GetFovFraction(aimAngles, Utils::CalcAngle(eyePos, vTargetBone))
+			: GetFov(aimAngles, Utils::CalcAngle(eyePos, vTargetBone));
+
+		if (fTargetFov > maxFov)
+			return false;
+
+		maxFov = fTargetFov;
+		return true;
+	}
+
+	Vector GetAimPunchCorrection(C_CSPlayer* pLocal) const
+	{
+		if (Options::g_bRCSEnabled)
+			return Vector(0, 0, 0);
+
+		auto aimPunchCorrection = *pLocal->AimPunch() * 2.f;
+		if (Options::g_fAimAssistRCSFailureChance < rand() % 100)
+			return aimPunchCorrection;
+
+		const auto failureAmount = rand() % 2 == 1
+			? 1 + Options::g_fAimAssistRCSFailureAmount / 100.f
+			: 1 - Options::g_fAimAssistRCSFailureAmount / 100.f;
+
+		return aimPunchCorrection * failureAmount;
+	}
+
+	Vector GetDelta(C_CSPlayer* pLocal, C_CSPlayer* pTarget, ECSPlayerBones bone) const
 	{
 		QAngle qViewAngles;
 		Interfaces::Engine()->GetViewAngles(qViewAngles);
@@ -211,14 +275,14 @@ private:
 		return qDelta;
 	}
 
-	static float GetFov(const QAngle& viewAngle, const QAngle& aimAngle)
+	float GetFov(const QAngle& viewAngle, const QAngle& aimAngle) const
 	{
 		auto delta = aimAngle - viewAngle;
 		Utils::Clamp(delta);
 		return sqrtf(powf(delta.x, 2.f) + powf(delta.y, 2.f));
 	}
 
-	static float GetFovFraction(const QAngle& viewAngle, const QAngle& aimAngle)
+	float GetFovFraction(const QAngle& viewAngle, const QAngle& aimAngle) const
 	{
 		auto delta = aimAngle - viewAngle;
 		Utils::Clamp(delta);

@@ -12,6 +12,9 @@ public:
 
 	void StartPrediction(C_CSPlayer* pLocal, CUserCmd* pCmd)
 	{
+		if (IsBadWritePtr(m_pPredictionRandomSeed, sizeof(int)))
+			return;
+
 		Interfaces::MoveHelper()->SetHost(pLocal);
 		Container::Instance().Resolve<SignatureHelper>()->CurrentCommand(pLocal) = pCmd;
 		*m_pPredictionRandomSeed = pCmd->random_seed;
