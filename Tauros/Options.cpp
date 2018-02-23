@@ -22,9 +22,11 @@ namespace Options
 	};
 	int g_iAimAssistType = 2;
 	float g_fAimAssistType2AcceleratePercentage = 5.f;
-	float g_fAimAssistType2DirectionPenalty = 25.f;
+	float g_fAimAssistType2HorizontalPenalty = 25.f;
+	float g_fAimAssistType2VerticalPenalty = 15.f;
 	float g_fAimAssistType2DirectionBoost = 25.f;
 	float g_fAimAssistType2FovBoost = 400.f;
+	bool g_bAimAssistType2SniperAlwaysActive = false;
 	const char* g_szAimAssistLockTarget[5] = {
 		"Disabled",
 		"+25% FOV",

@@ -70,6 +70,7 @@ bool get_system_font_path(const std::string& name, std::string& path)
 
 DrawManager::DrawManager(IDirect3DDevice9* device)
 {
+	_context = ImGui::CreateContext();
     _device = device;
     _texture = nullptr;
     _drawList = nullptr;
@@ -77,12 +78,12 @@ DrawManager::DrawManager(IDirect3DDevice9* device)
 
 DrawManager::~DrawManager()
 {
-
+	ImGui::DestroyContext();
 }
 
 void DrawManager::CreateObjects(float autoScale)
 {
-    _drawList = new ImDrawList();
+    _drawList = new ImDrawList(ImGui::GetDrawListSharedData());
 
     uint8_t* pixel_data;
 
@@ -142,7 +143,8 @@ void DrawManager::BeginRendering()
 
 void DrawManager::EndRendering()
 {
-    ImGui_ImplDX9_RenderDrawLists(GetDrawData());
+	ImGui_ImplDX9_RenderDrawData(GetDrawData());
+	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
 }
 
 void DrawManager::AddText(ImVec2 point, ImU32 color, text_flags flags, const char* format, ...)
@@ -237,14 +239,14 @@ void DrawManager::AddCircleFilled(const ImVec2& centre, float radius, ImU32 col,
     _drawList->AddCircleFilled(centre, radius, col, num_segments);
 }
 
-void DrawManager::AddPolyline(const ImVec2* points, const int num_points, ImU32 col, bool closed, float thickness, bool anti_aliased)
+void DrawManager::AddPolyline(const ImVec2* points, const int num_points, ImU32 col, bool closed, float thickness)
 {
-    _drawList->AddPolyline(points, num_points, col, closed, thickness, anti_aliased);
+    _drawList->AddPolyline(points, num_points, col, closed, thickness);
 }
 
-void DrawManager::AddConvexPolyFilled(const ImVec2* points, const int num_points, ImU32 col, bool anti_aliased)
+void DrawManager::AddConvexPolyFilled(const ImVec2* points, const int num_points, ImU32 col)
 {
-    _drawList->AddConvexPolyFilled(points, num_points, col, anti_aliased);
+    _drawList->AddConvexPolyFilled(points, num_points, col);
 }
 
 void DrawManager::AddBezierCurve(const ImVec2& pos0, const ImVec2& cp0, const ImVec2& cp1, const ImVec2& pos1, ImU32 col, float thickness, int num_segments /*= 0*/)
@@ -254,7 +256,8 @@ void DrawManager::AddBezierCurve(const ImVec2& pos0, const ImVec2& cp0, const Im
 
 ImDrawData* DrawManager::GetDrawData()
 {
-    if(!_drawList->VtxBuffer.empty()) {
+    if(!_drawList->VtxBuffer.empty())
+	{
         _drawData.Valid = true;
         _drawData.CmdLists = &_drawList;
         _drawData.CmdListsCount = 1;

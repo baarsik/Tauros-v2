@@ -326,7 +326,7 @@
     <ClInclude Include="DrawManager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BinaryReader.hpp">
+    <ClInclude Include="bf_read.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

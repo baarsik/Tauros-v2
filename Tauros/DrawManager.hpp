@@ -1,7 +1,6 @@
 #pragma once
 
 #include <memory>
-#include <vector>
 #include <windows.h>
 
 #include <d3d9.h>
@@ -44,8 +43,8 @@ public:
     void AddTriangleFilled(const ImVec2& a, const ImVec2& b, const ImVec2& c, ImU32 col);
     void AddCircle(const ImVec2& centre, float radius, ImU32 col, int num_segments = 12, float thickness = 1.0f);
     void AddCircleFilled(const ImVec2& centre, float radius, ImU32 col, int num_segments = 12);
-    void AddPolyline(const ImVec2* points, const int num_points, ImU32 col, bool closed, float thickness, bool anti_aliased);
-    void AddConvexPolyFilled(const ImVec2* points, const int num_points, ImU32 col, bool anti_aliased);
+    void AddPolyline(const ImVec2* points, const int num_points, ImU32 col, bool closed, float thickness);
+    void AddConvexPolyFilled(const ImVec2* points, const int num_points, ImU32 col);
     void AddBezierCurve(const ImVec2& pos0, const ImVec2& cp0, const ImVec2& cp1, const ImVec2& pos1, ImU32 col, float thickness, int num_segments = 0);
 
 private:
@@ -53,6 +52,7 @@ private:
 
     IDirect3DDevice9*   _device;
     IDirect3DTexture9*  _texture;
+	ImGuiContext*       _context;
     ImDrawList*         _drawList;
     ImDrawData          _drawData;
     ImFontAtlas         _fonts;

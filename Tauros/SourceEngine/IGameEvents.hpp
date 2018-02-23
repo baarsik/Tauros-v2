@@ -58,5 +58,5 @@ public:
 	virtual IGameEvent* DuplicateEvent(IGameEvent* event) = 0;
 	virtual void FreeEvent(IGameEvent* event) = 0;
 	virtual bool SerializeEvent(IGameEvent* event, bf_write* buf) = 0;
-	virtual IGameEvent* UnserializeEvent(BinaryReader* buf) = 0; // create new KeyValues, must be deleted
+	virtual IGameEvent* UnserializeEvent(bf_read* buf) = 0; // create new KeyValues, must be deleted
 };

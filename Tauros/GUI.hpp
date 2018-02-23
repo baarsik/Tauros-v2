@@ -31,7 +31,7 @@ public:
 		auto style = &ImGui::GetStyle();
 
 		style->WindowPadding = ImVec2(15 * m_flAutoScale, 15 * m_flAutoScale);
-		style->WindowRounding = 0.0f;
+		style->WindowRounding = 0.f;
 		style->FramePadding = ImVec2(5 * m_flAutoScale, 5 * m_flAutoScale);
 		style->FrameRounding = 4.0f * m_flAutoScale;
 		style->ItemSpacing = ImVec2(12 * m_flAutoScale, 8 * m_flAutoScale);
@@ -41,13 +41,14 @@ public:
 		style->ScrollbarRounding = 9.0f * m_flAutoScale;
 		style->GrabMinSize = 5.0f * m_flAutoScale;
 		style->GrabRounding = 3.0f * m_flAutoScale;
+		style->WindowBorderSize = 0.f;
 
 		SetButtonStyle();
-		style->Colors[ImGuiCol_Text] = ImVec4(0.80f, 0.80f, 0.83f, 1.00f);
-		style->Colors[ImGuiCol_TextDisabled] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
-		style->Colors[ImGuiCol_WindowBg] = ImVec4(0.06f, 0.05f, 0.07f, 0.7f);
-		style->Colors[ImGuiCol_ChildWindowBg] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
-		style->Colors[ImGuiCol_PopupBg] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
+		style->Colors[ImGuiCol_Text] = ImVec4("#ccccd4");
+		style->Colors[ImGuiCol_TextDisabled] = ImVec4("#3d3b4a");
+		style->Colors[ImGuiCol_WindowBg] = ImVec4("#0f0d12", 0.7f);
+		style->Colors[ImGuiCol_ChildBg] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
+		style->Colors[ImGuiCol_PopupBg] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f); // ImVec4(0.19f, 0.18f, 0.21f, 1.00f);
 		style->Colors[ImGuiCol_Border] = ImVec4(0.80f, 0.80f, 0.83f, 0.88f);
 		style->Colors[ImGuiCol_BorderShadow] = ImVec4(0.92f, 0.91f, 0.88f, 0.00f);
 		style->Colors[ImGuiCol_FrameBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
@@ -61,16 +62,15 @@ public:
 		style->Colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.2058f, 0.3066f, 0.4877f, 1.0f);
 		style->Colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.1734f, 0.2995f, 0.5270f, 1.00f);
 		style->Colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.2330f, 0.3125f, 0.4545f, 1.00f);
-		style->Colors[ImGuiCol_ComboBg] = ImVec4(0.19f, 0.18f, 0.21f, 1.00f);
 		style->Colors[ImGuiCol_CheckMark] = ImVec4(0.80f, 0.80f, 0.83f, 0.31f);
 		style->Colors[ImGuiCol_SliderGrab] = ImVec4("#bb3c3c");
 		style->Colors[ImGuiCol_SliderGrabActive] = ImVec4("#c15454");
 		style->Colors[ImGuiCol_Button] = ImVec4(0.18f, 0.18f, 0.21f, 1.00f);
 		style->Colors[ImGuiCol_HeaderHovered] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
 		style->Colors[ImGuiCol_HeaderActive] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
-		style->Colors[ImGuiCol_Column] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
-		style->Colors[ImGuiCol_ColumnHovered] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
-		style->Colors[ImGuiCol_ColumnActive] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+		style->Colors[ImGuiCol_Separator] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+		style->Colors[ImGuiCol_SeparatorHovered] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
+		style->Colors[ImGuiCol_SeparatorActive] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
 		style->Colors[ImGuiCol_ResizeGrip] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
 		style->Colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
 		style->Colors[ImGuiCol_ResizeGripActive] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
@@ -154,7 +154,12 @@ public:
 		for (int i = Window::Main; i <= Window::Configs; i++)
 		{
 			SetButtonStyle(m_openedWindow == i);
-			const auto roundingCorners = i == Window::Main ? ~(2 | 4) : i == Window::Configs ? ~(1 | 8) : ~(1 | 2 | 4 | 8);
+			const auto roundingCorners = i == Window::Main
+				? ImDrawCornerFlags_Left
+				: i == Window::Configs
+					? ImDrawCornerFlags_Right
+					: 0;
+
 			if (ImGui::ButtonEx(vecWindowNames[i], ImVec2(ImGui::CalcTextSize(vecWindowNames[i]).x + 48 * m_flAutoScale, 48 * m_flAutoScale), 0, roundingCorners))
 				m_openedWindow = Window(i);
 
@@ -196,9 +201,36 @@ public:
 			ImGui::Combo(XorStr("Type"), &Options::g_iAimAssistType, Options::g_szAimAssistType, IM_ARRAYSIZE(Options::g_szAimAssistType));
 			if (Options::g_iAimAssistType == 2)
 			{
+				const auto aimAssistButtonLength = ImGui::CalcTextSize(XorStr("Legit")).x + ImGui::CalcTextSize(XorStr("Semi-Legit")).x + 96 * m_flAutoScale + 1;
+				auto posStart = ImGui::GetCurrentWindow()->DC.CursorPos;
+				posStart.x -= 1; posStart.y -= 1;
+				auto posEnd = posStart;
+				posEnd.x += aimAssistButtonLength + 2; posEnd.y += 48 * m_flAutoScale + 2;
+				ImGui::GetCurrentWindow()->DrawList->AddRectFilled(posStart, posEnd, ImGui::GetColorU32(ImVec4("#fb4248")), style->FrameRounding);
+				if (ImGui::ButtonEx(XorStr("Legit"), ImVec2(ImGui::CalcTextSize(XorStr("Legit")).x + 48 * m_flAutoScale, 48 * m_flAutoScale), 0, ImDrawCornerFlags_Left))
+				{
+					Options::g_fAimAssistType2AcceleratePercentage = 5.f;
+					Options::g_fAimAssistType2DirectionBoost = 25.f;
+					Options::g_fAimAssistType2FovBoost = 400.f;
+					Options::g_fAimAssistType2HorizontalPenalty = 25.f;
+					Options::g_fAimAssistType2VerticalPenalty = 15.f;
+					Options::g_bAimAssistType2SniperAlwaysActive = false;
+				}
+				ImGui::SameLine(0, 1.f);
+				if (ImGui::ButtonEx(XorStr("Semi-Legit"), ImVec2(ImGui::CalcTextSize(XorStr("Semi-Legit")).x + 48 * m_flAutoScale, 48 * m_flAutoScale), 0, ImDrawCornerFlags_Right))
+				{
+					Options::g_fAimAssistType2AcceleratePercentage = 5.f;
+					Options::g_fAimAssistType2DirectionBoost = 0.f;
+					Options::g_fAimAssistType2FovBoost = 0.f;
+					Options::g_fAimAssistType2HorizontalPenalty = 66.f;
+					Options::g_fAimAssistType2VerticalPenalty = 66.f;
+					Options::g_bAimAssistType2SniperAlwaysActive = true;
+				}
+
 				ImGui::SliderFloat(XorStr("Accelerate percentage"), &Options::g_fAimAssistType2AcceleratePercentage, 0.f, 100.f, XorStr("%.0f%%"));
 				ImGui::SliderFloat(XorStr("Right direction boost"), &Options::g_fAimAssistType2DirectionBoost, 0.f, 100.f, XorStr("%.0f%%"));
-				ImGui::SliderFloat(XorStr("Wrong direction penalty"), &Options::g_fAimAssistType2DirectionPenalty, 0.f, 100.f, XorStr("%.0f%%"));
+				ImGui::SliderFloat(XorStr("Wrong horizontal penalty"), &Options::g_fAimAssistType2HorizontalPenalty, 0.f, 100.f, XorStr("%.0f%%"));
+				ImGui::SliderFloat(XorStr("Wrong vertical penalty"), &Options::g_fAimAssistType2VerticalPenalty, 0.f, 100.f, XorStr("%.0f%%"));
 				ImGui::SliderFloat(XorStr("FOV boost"), &Options::g_fAimAssistType2FovBoost, 0.f, 600.f, XorStr("%.0f%%"));
 			}
 			ImGui::Checkbox(XorStr("Deathmatch"), &Options::g_bDeathmatch);
@@ -208,6 +240,10 @@ public:
 			{
 				ImGui::Checkbox(XorStr("Auto aim"), &Options::g_bAimAssistAutoShoot);
 				ImGui::Checkbox(XorStr("Lock mouse"), &Options::g_bAimAssistLockMouse);
+			}
+			else
+			{
+				ImGui::Checkbox(XorStr("Always active (Sniper)"), &Options::g_bAimAssistType2SniperAlwaysActive);
 			}
 			ImGui::Checkbox(XorStr("Ignore smoke"), &Options::g_bAimAssistIgnoreSmoke);
 			ImGui::Checkbox(XorStr("Scope required (Sniper)"), &Options::g_bAimAssistSniperScopedOnly);
@@ -335,7 +371,10 @@ public:
 
 	void UpdateCursorVisibility() const
 	{
-		ImGui::GetIO().MouseDrawCursor = Options::g_bMainWindowOpen;
+		auto& io = ImGui::GetIO();
+		io.MouseDrawCursor = Options::g_bMainWindowOpen;
+		io.WantCaptureKeyboard = !Options::g_bMainWindowOpen;
+		io.WantCaptureMouse = !Options::g_bMainWindowOpen;
 	}
 
 	void UpdateSize(IDirect3DDevice9* pDevice)

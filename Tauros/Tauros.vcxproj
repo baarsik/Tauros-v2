@@ -43,7 +43,7 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -191,7 +191,7 @@
     <ClCompile Include="SourceEngine\VMatrix.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BinaryReader.hpp" />
+    <ClInclude Include="bf_read.hpp" />
     <ClInclude Include="Container.hpp" />
     <ClInclude Include="CSGOStructs.hpp" />
     <ClInclude Include="DrawManager.hpp" />

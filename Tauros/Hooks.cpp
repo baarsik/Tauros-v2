@@ -8,7 +8,6 @@
 #include "Options.hpp"
 #include "Utils.hpp"
 #include "EnginePrediction.hpp"
-#include "BinaryReader.hpp"
 
 // GUI related
 #include "GUI.hpp"
@@ -38,7 +37,7 @@
 
 using namespace std;
 
-extern LRESULT ImGui_ImplDX9_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 extern HMODULE g_hLib;
 extern HWND g_hWnd;
 
@@ -142,9 +141,9 @@ namespace Hooks
 	void GUI_Init(IDirect3DDevice9* pDevice)
 	{
 		//Initializes the GUI and the renderer
+		Container::Instance().Register<DrawManager>(pDevice);
 		ImGui_ImplDX9_Init(g_hWnd, pDevice);
 		Container::Instance().Register<GUI>(pDevice);
-		Container::Instance().Register<DrawManager>(pDevice);
 		Container::Instance().Resolve<DrawManager>()->CreateObjects(Container::Instance().Resolve<GUI>()->GetScale());
 		FillContainer();
 
@@ -198,6 +197,7 @@ namespace Hooks
 		// Call original Reset.
 		const auto originalReset = g_fnOriginalReset(pDevice, pPresentationParameters);
 
+		ImGui::CreateContext();
 		const auto gui = Container::Instance().Resolve<GUI>();
 		gui->UpdateSize(pDevice);
 		drawManager->CreateObjects(gui->GetScale());
@@ -268,7 +268,7 @@ namespace Hooks
 		Container::Instance().Resolve<GUI>()->CheckToggle(g_vecPressedKeys);
 		Container::Instance().Resolve<AutoPistol>()->CheckToggle(g_vecPressedKeys);
 
-        if(g_bWasInitialized && Options::g_bMainWindowOpen && ImGui_ImplDX9_WndProcHandler(hWnd, uMsg, wParam, lParam))
+        if(g_bWasInitialized && Options::g_bMainWindowOpen && ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
             return true;
 
 		return CallWindowProc(g_pOldWindowProc, hWnd, uMsg, wParam, lParam);

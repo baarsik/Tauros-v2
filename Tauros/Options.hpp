@@ -12,9 +12,11 @@ namespace Options
 	extern const char* g_szAimAssistType[3];
 	extern int g_iAimAssistType;
 	extern float g_fAimAssistType2AcceleratePercentage;
-	extern float g_fAimAssistType2DirectionPenalty;
+	extern float g_fAimAssistType2HorizontalPenalty;
+	extern float g_fAimAssistType2VerticalPenalty;
 	extern float g_fAimAssistType2DirectionBoost;
 	extern float g_fAimAssistType2FovBoost;
+	extern bool g_bAimAssistType2SniperAlwaysActive;
 	extern const char* g_szAimAssistLockTarget[5];
 	extern int g_iAimAssistLockTarget;
 	extern bool g_bAimAssistIgnoreObstacles;

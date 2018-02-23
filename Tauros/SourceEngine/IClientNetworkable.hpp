@@ -4,7 +4,7 @@
 
 class IClientUnknown;
 class ClientClass;
-class BinaryReader;
+class bf_read;
 
 class IClientNetworkable
 {
@@ -20,7 +20,7 @@ public:
 	virtual void             __unkn(void) = 0;
 	virtual bool             IsDormant(void) = 0;
 	virtual int              EntIndex(void) const = 0;
-	virtual void             ReceiveMessage(int classID, BinaryReader& msg) = 0;
+	virtual void             ReceiveMessage(int classID, bf_read& msg) = 0;
 	virtual void*            GetDataTableBasePtr() = 0;
 	virtual void             SetDestroyedOnRecreateEntities(void) = 0;
 };

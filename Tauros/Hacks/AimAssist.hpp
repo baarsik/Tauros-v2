@@ -52,16 +52,15 @@ public:
 		// 'Hacky' acceleration should be greatly reduced
 		if (Options::g_iAimAssistType == 2)
 		{
-			const auto penalty = 1 - Options::g_fAimAssistType2DirectionPenalty / 100.f;
 			const auto boost = 1 + Options::g_fAimAssistType2DirectionBoost / 100.f;
 
 			if (vMouse.x > 0 && vDelta.x < 0 || vMouse.x < 0 && vDelta.x > 0)
-				vMouse.x *= penalty;
+				vMouse.x *= 1 - Options::g_fAimAssistType2HorizontalPenalty / 100.f;
 			else
 				vMouse.x *= boost;
 
 			if (vMouse.y > 0 && vDelta.y < 0 || vMouse.y < 0 && vDelta.y > 0)
-				vMouse.y *= penalty;
+				vMouse.y *= 1 - Options::g_fAimAssistType2VerticalPenalty / 100.f;
 			else
 				vMouse.x *= boost;
 
@@ -86,8 +85,14 @@ private:
 		if (!pWeapon || pWeapon->IsKnife() || pWeapon->IsGrenade() || pWeapon->IsC4())
 			return false;
 
-		if (!m_bIsAttacking && (Options::g_iAimAssistType == 2 || !Options::g_bAimAssistAutoShoot) && !IsTriggerEnabled(pLocal, pWeapon))
-			return false;
+		if (!m_bIsAttacking && !IsTriggerEnabled(pLocal, pWeapon))
+		{
+			if (Options::g_iAimAssistType != 2 && !Options::g_bAimAssistAutoShoot)
+				return false;
+
+			if (Options::g_iAimAssistType == 2 && (!Options::g_bAimAssistType2SniperAlwaysActive || !pLocal->IsScoped() || !pWeapon->IsSniper()))
+				return false;
+		}
 
 		static auto emptyClip = false;
 		const auto nextAttackTime = pWeapon->NextPrimaryAttack() - Interfaces::GlobalVars()->curtime;
