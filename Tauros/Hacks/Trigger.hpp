@@ -68,12 +68,8 @@ private:
 		auto vTraceAngles = pCmd->viewangles;
 		if (!Options::g_bRCSEnabled)
 		{
-			const auto punchAngles = *pLocal->AimPunch() * 2.0f;
-			if (punchAngles.x != 0.0f || punchAngles.y != 0)
-			{
-				vTraceAngles -= punchAngles;
-				Utils::Clamp(vTraceAngles);
-			}
+			vTraceAngles += (*pLocal->AimPunch() * 2.0f);
+			Utils::Clamp(vTraceAngles);
 		}
 		Utils::AngleVectors(vTraceAngles, &vTraceForward);
 		const auto vTraceStart = pLocal->GetEyePos();
