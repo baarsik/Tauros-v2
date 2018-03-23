@@ -49,7 +49,7 @@ public:
 	{
 		if (!this) return nullptr;
 		using CCSWeaponInfo_t = CCSWeaponData*(__thiscall*)(void*);
-		return CallVFunction<CCSWeaponInfo_t>(this, 446)(this);
+		return CallVFunction<CCSWeaponInfo_t>(this, 447)(this);
 	}
 	float C_BaseCombatWeapon::GetInaccuracy()
 	{
