@@ -8,6 +8,7 @@
 #include "Options.hpp"
 #include "Utils.hpp"
 #include "EnginePrediction.hpp"
+#include <intrin.h>
 
 // GUI related
 #include "GUI.hpp"
@@ -147,8 +148,8 @@ namespace Hooks
 		Container::Instance().Resolve<DrawManager>()->CreateObjects(Container::Instance().Resolve<GUI>()->GetScale());
 		FillContainer();
 
-		g_fnOriginalCreateMove = g_pClientHook->Hook(21, reinterpret_cast<CreateMove_t>(Hooked_CreateMove_Proxy));                          // IBaseClientDLL::CreateMove
-		g_fnOriginalFrameStageNotify = g_pClientHook->Hook(36, reinterpret_cast<FrameStageNotify_t>(Hooked_FrameStageNotify));              // IBaseClientDLL::FrameStageNotify
+		g_fnOriginalCreateMove = g_pClientHook->Hook(22, reinterpret_cast<CreateMove_t>(Hooked_CreateMove_Proxy));                          // IBaseClientDLL::CreateMove CHL
+		g_fnOriginalFrameStageNotify = g_pClientHook->Hook(37, reinterpret_cast<FrameStageNotify_t>(Hooked_FrameStageNotify));              // IBaseClientDLL::FrameStageNotify
 		g_fnOriginalOverrideView = g_pClientModeHook->Hook(18, reinterpret_cast<OverrideView_t>(Hooked_OverrideView));                      // IClientMode::OverrideView
 		g_fnOriginalOverrideMouseInput = g_pClientModeHook->Hook(23, reinterpret_cast<OverrideMouseInput_t>(Hooked_OverrideMouseInput));    // IClientMode::OverrideMouseInput
 		g_fnOriginalOverrideConfig = g_pMaterialSystemHook->Hook(21, reinterpret_cast<OverrideConfig_t>(Hooked_OverrideConfig));            // IMaterialSystem::OverrideConfig
@@ -166,7 +167,24 @@ namespace Hooks
 			GUI_Init(pDevice);
 			return g_fnOriginalEndScene(pDevice);
 		}
-		
+
+		static auto wanted_ret_address = _ReturnAddress();
+		if (_ReturnAddress() != wanted_ret_address) //Panorama fix credits to NuII from UC
+			return g_fnOriginalEndScene(pDevice);
+
+		//backup render states
+		DWORD colorwrite, srgbwrite;
+		pDevice->GetRenderState(D3DRS_COLORWRITEENABLE, &colorwrite);
+		pDevice->GetRenderState(D3DRS_SRGBWRITEENABLE, &srgbwrite);
+
+		//fix drawing without calling engine functons/cl_showpos
+		pDevice->SetRenderState(D3DRS_COLORWRITEENABLE, 0xffffffff);
+		//removes the source engine color correction
+		pDevice->SetRenderState(D3DRS_SRGBWRITEENABLE, false);
+
+		//draw here
+
+
 		const auto gui = Container::Instance().Resolve<GUI>();
 		gui->UpdateCursorVisibility();
 		ImGui_ImplDX9_NewFrame();
@@ -177,8 +195,14 @@ namespace Hooks
 
 		Container::Instance().Resolve<ESP>()->EndScene_Pre(pDevice);
 
+
 		ImGui::Render();
 		drawManager->EndRendering();
+
+
+		pDevice->SetRenderState(D3DRS_COLORWRITEENABLE, colorwrite);
+		pDevice->SetRenderState(D3DRS_SRGBWRITEENABLE, srgbwrite);
+
 
 		return g_fnOriginalEndScene(pDevice);
 	}

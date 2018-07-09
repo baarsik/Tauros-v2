@@ -457,9 +457,9 @@ public:
 		QAngle const& angles, Vector* pLightingCenter) = 0;
 
 	virtual int GetModelContents(int modelIndex) const = 0;
-	virtual studiohdr_t* GetStudioModel(const model_t* mod) = 0;
 	virtual int GetModelSpriteWidth(const model_t* model) const = 0;
 	virtual int GetModelSpriteHeight(const model_t* model) const = 0;
+	virtual studiohdr_t* GetStudioModel(const model_t* mod) = 0; 
 
 	// Sets/gets a map-specified fade range (client only)
 	virtual void SetLevelScreenFadeRange(float flMinSize, float flMaxSize) = 0;
