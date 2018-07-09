@@ -13,12 +13,12 @@ public:
 	{
 		m_pD3DDevice = **reinterpret_cast<uint32_t**>(Utils::FindSignature(XorStr("shaderapidx9.dll"), XorStr("A1 ? ? ? ? 6A 00 53")) + 0x1);
 		m_fnSetClanTag = reinterpret_cast<SetClanTag_t>(Utils::FindSignature(XorStr("engine.dll"), XorStr("53 56 57 8B DA 8B F9 FF 15")));
-		m_fnIsReady = reinterpret_cast<IsReady_t>(Utils::FindSignature(XorStr("client.dll"), XorStr("55 8B EC 83 E4 F8 83 EC 08 56 8B 35 ? ? ? ? 57 83 BE")));
-		m_fnServerRankRevealAll = reinterpret_cast<ServerRankRevealAll_t>(Utils::FindSignature(XorStr("client.dll"), XorStr("55 8B EC 8B 0D ? ? ? ? 68")));
-		m_fnLineThroughSmoke = reinterpret_cast<LineThroughSmoke_t>(Utils::FindSignature(XorStr("client.dll"), XorStr("55 8B EC 83 EC 08 8B 15 ? ? ? ? 0F 57 C0")));
-		m_pCurrentCommand = *reinterpret_cast<uint32_t*>(Utils::FindSignature(XorStr("client.dll"), XorStr("89 BE ? ? ? ? E8 ? ? ? ? 85 FF")) + 2);
-		m_pPredictionRandomSeed = *reinterpret_cast<int**>(Utils::FindSignature(XorStr("client.dll"), XorStr("A3 ? ? ? ? 66 0F 6E 86")) + 1);
-		m_pViewMatrix = *reinterpret_cast<unsigned*>(Utils::FindSignature(XorStr("client.dll"), XorStr("0F 10 05 ? ? ? ? 8D 85 ? ? ? ? B9")) + 0x3) + 176;
+		m_fnIsReady = reinterpret_cast<IsReady_t>(Utils::FindSignature(XorStr("client_panorama.dll"), XorStr("55 8B EC 83 E4 F8 83 EC 08 56 8B 35 ? ? ? ? 57 83 BE")));
+		m_fnServerRankRevealAll = reinterpret_cast<ServerRankRevealAll_t>(Utils::FindSignature(XorStr("client_panorama.dll"), XorStr("55 8B EC 8B 0D ? ? ? ? 85 C9 75 ? A1 ? ? ? ? 68 ? ? ? ? 8B 08 8B 01 FF 50 ? 85 C0 74 ? 8B C8 E8 ? ? ? ? 8B C8 EB ? 33 C9 89 0D ? ? ? ? 8B 45 ? FF 70 ? E8 ? ? ? ? B0 ? 5D")));
+		m_fnLineThroughSmoke = reinterpret_cast<LineThroughSmoke_t>(Utils::FindSignature(XorStr("client_panorama.dll"), XorStr("55 8B EC 83 EC 08 8B 15 ? ? ? ? 0F 57 C0")));
+		m_pCurrentCommand = *reinterpret_cast<uint32_t*>(Utils::FindSignature(XorStr("client_panorama.dll"), XorStr("89 BE ? ? ? ? E8 ? ? ? ? 85 FF")) + 2);
+		m_pPredictionRandomSeed = *reinterpret_cast<int**>(Utils::FindSignature(XorStr("client_panorama.dll"), XorStr("A3 ? ? ? ? 66 0F 6E 86")) + 1);
+		m_pViewMatrix = *reinterpret_cast<unsigned*>(Utils::FindSignature(XorStr("client_panorama.dll"), XorStr("0F 10 05 ? ? ? ? 8D 85 ? ? ? ? B9")) + 0x3) + 176;
 	}
 
 	unsigned D3DDevice() const

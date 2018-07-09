@@ -70,9 +70,9 @@ void ImGui_ImplDX9_RenderDrawData(ImDrawData* draw_data)
     }
 
     // Backup the DX9 state
-    IDirect3DStateBlock9* d3d9_state_block = nullptr;
+    /*IDirect3DStateBlock9* d3d9_state_block = nullptr;
     if (g_pd3dDevice->CreateStateBlock(D3DSBT_ALL, &d3d9_state_block) < 0)
-        return;
+        return;*/
 
     // Copy and convert all vertices into a single contiguous buffer
     CUSTOMVERTEX* vtx_dst;
@@ -178,8 +178,8 @@ void ImGui_ImplDX9_RenderDrawData(ImDrawData* draw_data)
     }
 
     // Restore the DX9 state
-    d3d9_state_block->Apply();
-    d3d9_state_block->Release();
+    /*d3d9_state_block->Apply();
+    d3d9_state_block->Release();*/
 }
 
 static void ImGui_ImplWin32_UpdateMouseCursor()

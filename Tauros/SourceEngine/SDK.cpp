@@ -48,7 +48,7 @@ IBaseClientDLL* Interfaces::Client()
 {
 	if (!m_pClient)
 	{
-		const auto pfnFactory = GetFactory(GetModuleHandleA(XorStr("client.dll")));
+		const auto pfnFactory = GetFactory(GetModuleHandleA(XorStr("client_panorama.dll")));
 		m_pClient = CaptureInterface<IBaseClientDLL>(pfnFactory, XorStr("VClient018"));
 	}
 	return m_pClient;
@@ -57,7 +57,7 @@ IClientEntityList* Interfaces::EntityList()
 {
 	if (!m_pEntityList)
 	{
-		const auto pfnFactory = GetFactory(GetModuleHandleA(XorStr("client.dll")));
+		const auto pfnFactory = GetFactory(GetModuleHandleA(XorStr("client_panorama.dll")));
 		m_pEntityList = CaptureInterface<IClientEntityList>(pfnFactory, XorStr("VClientEntityList003"));
 	}
 	return m_pEntityList;
@@ -93,8 +93,9 @@ CInput* Interfaces::Input()
 {
 	if (!m_pInput)
 	{
-		const auto pClientVFTable = *reinterpret_cast<uint32_t**>(Client());
-		m_pInput = *reinterpret_cast<CInput**>(pClientVFTable[15] + 0x1);
+		/*const auto pClientVFTable = *reinterpret_cast<uint32_t**>(Client());
+		m_pInput = *reinterpret_cast<CInput**>(pClientVFTable[15] + 0x1);*/
+		m_pInput = *(CInput**)(Utils::FindSignature(XorStr("client_panorama.dll"), XorStr("B9 ? ? ? ? F3 0F 11 04 24 FF 50 10")) + 1);
 	}
 	return m_pInput;
 }
@@ -183,7 +184,7 @@ CMoveHelper* Interfaces::MoveHelper()
 {
 	if (!m_pMoveHelper)
 	{
-		m_pMoveHelper = **reinterpret_cast<CMoveHelper***>(Utils::FindSignature(XorStr("client.dll"), XorStr("8B 0D ? ? ? ? 8B 46 08 68")) + 2);
+		m_pMoveHelper = **reinterpret_cast<CMoveHelper***>(Utils::FindSignature(XorStr("client_panorama.dll"), XorStr("8B 0D ? ? ? ? 8B 46 08 68")) + 2);
 	}
 	return m_pMoveHelper;
 }
@@ -191,7 +192,7 @@ CGameMovement* Interfaces::GameMovement()
 {
 	if (!m_pGameMovement)
 	{
-		const auto pfnFactory = GetFactory(GetModuleHandleA(XorStr("client.dll")));
+		const auto pfnFactory = GetFactory(GetModuleHandleA(XorStr("client_panorama.dll")));
 		m_pGameMovement = CaptureInterface<CGameMovement>(pfnFactory, XorStr("GameMovement001"));
 	}
 	return m_pGameMovement;
@@ -200,7 +201,7 @@ CPrediction* Interfaces::Prediction()
 {
 	if (!m_pPrediction)
 	{
-		const auto pfnFactory = GetFactory(GetModuleHandleA(XorStr("client.dll")));
+		const auto pfnFactory = GetFactory(GetModuleHandleA(XorStr("client_panorama.dll")));
 		m_pPrediction = CaptureInterface<CPrediction>(pfnFactory, XorStr("VClientPrediction001"));
 	}
 	return m_pPrediction;
