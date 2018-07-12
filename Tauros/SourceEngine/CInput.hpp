@@ -88,6 +88,16 @@ public:
 	CRC32_t   m_crc;
 };
 
+class IInputSystem
+{
+public:
+	void EnableInput(bool bEnable)
+	{
+		using vfunc = void(__thiscall*)(IInputSystem*, bool);
+		CallVFunction<vfunc>(this, 11)(this, bEnable);
+	}
+};
+
 class CInput
 {
 public:

@@ -23,6 +23,7 @@ CMoveHelper*        Interfaces::m_pMoveHelper = nullptr;
 CGameMovement*      Interfaces::m_pGameMovement = nullptr;
 CPrediction*        Interfaces::m_pPrediction = nullptr;
 CViewRender*        Interfaces::m_pViewRender = nullptr;
+IInputSystem*       Interfaces::m_InputSystem = nullptr;
 
 CreateInterfaceFn GetFactory(HMODULE hMod)
 {
@@ -179,6 +180,15 @@ IMaterialSystem* Interfaces::MaterialSystem()
 		m_pMaterialSystem = CaptureInterface<IMaterialSystem>(pfnFactory, XorStr("VMaterialSystem080"));
 	}
 	return m_pMaterialSystem;
+}
+IInputSystem* Interfaces::InputSystem()
+{
+	if (!m_InputSystem)
+	{
+		const auto pfnFactory = GetFactory(GetModuleHandleA(XorStr("inputsystem.dll")));
+		m_InputSystem = CaptureInterface<IInputSystem>(pfnFactory, XorStr("InputSystemVersion001"));
+	}
+	return m_InputSystem;
 }
 CMoveHelper* Interfaces::MoveHelper()
 {
