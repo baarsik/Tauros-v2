@@ -45,6 +45,7 @@ namespace Hooks
 	using PaintTraverse_t         = void(__thiscall*)(IPanel*, VPANEL, bool, bool);
 	using PlaySound_t             = void(__thiscall*)(ISurface*, const char*);
 	using DrawModelExecute_t      = void(__thiscall*)(IVModelRender*, IMatRenderContext*, const DrawModelState_t&, const ModelRenderInfo_t&, matrix3x4_t*);
+	using LockCursor_t			  = void(__thiscall*)(ISurface*);
 	
 	//---------------------------------------------------
 	// Hooked functions
@@ -61,5 +62,6 @@ namespace Hooks
 	void      __stdcall Hooked_OverrideView(CViewSetup*);
 	void      __stdcall Hooked_DrawModelExecute(IMatRenderContext*, const DrawModelState_t&, const ModelRenderInfo_t&, matrix3x4_t*);
 	bool      __stdcall Hooked_OverrideConfig(MaterialSystem_Config_t*, bool);
+	void	  __stdcall Hooked_LockCursor();
 }
 

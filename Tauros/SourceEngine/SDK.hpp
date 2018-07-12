@@ -63,6 +63,7 @@ public:
 	static CGameMovement*         GameMovement();
 	static CPrediction*           Prediction();
 	static CViewRender*           ViewRender();
+	static IInputSystem*		  InputSystem();
 
 private:
 	static IVEngineClient*        m_pEngine;
@@ -85,4 +86,5 @@ private:
 	static CGameMovement*         m_pGameMovement;
 	static CPrediction*           m_pPrediction;
 	static CViewRender*           m_pViewRender;
+	static IInputSystem*		  m_InputSystem;
 };

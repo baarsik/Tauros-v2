@@ -100,7 +100,7 @@ public:
 	virtual void        RestrictPaintToSinglePanel(VPANEL panel, bool bForceAllowNonModalSurface = false) = 0;
 	virtual void        SetModalPanel(VPANEL) = 0;
 	virtual VPANEL      GetModalPanel() = 0;
-	virtual void        UnlockCursor() = 0;
+	virtual void		junkCode() = 0; //unlock cursor was here
 	virtual void        LockCursor() = 0;
 	virtual void        SetTranslateExtendedKeys(bool state) = 0;
 	virtual VPANEL      GetTopmostPopup() = 0;
@@ -142,4 +142,10 @@ public:
 	virtual void        DrawTexturedSubRect(int x0, int y0, int x1, int y1, float texs0, float text0, float texs1, float text1) = 0;
 	virtual void        DrawTexturedPolygon(int n, Vertex_t *pVertice, bool bClipVertices = true) = 0;
 
+
+	void				UnlockCursor()
+	{
+		typedef void(__thiscall *UnlockCursor)(void*);
+		CallVFunction<UnlockCursor>(this, 66)(this);
+	}
 };

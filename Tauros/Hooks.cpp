@@ -53,6 +53,7 @@ namespace Hooks
 	unique_ptr<VFTableHook>            g_pDrawModelExecuteHook = nullptr;
 	unique_ptr<VFTableHook>            g_pEventManagerHook = nullptr;
 	unique_ptr<VFTableHook>            g_pMaterialSystemHook = nullptr;
+	unique_ptr<VFTableHook>			   g_pIInputSystemHook = nullptr;
 
 	EndScene_t                         g_fnOriginalEndScene = nullptr;
 	Reset_t                            g_fnOriginalReset = nullptr;
@@ -64,6 +65,7 @@ namespace Hooks
 	DrawModelExecute_t                 g_fnOriginalDrawModelExecute = nullptr;
 	OverrideMouseInput_t               g_fnOriginalOverrideMouseInput = nullptr;
 	OverrideConfig_t                   g_fnOriginalOverrideConfig = nullptr;
+	LockCursor_t					   g_fnOriginalLockCursor = nullptr;
 
 	WNDPROC                            g_pOldWindowProc = nullptr;
 
@@ -91,6 +93,7 @@ namespace Hooks
 		g_pModelRenderHook = make_unique<VFTableHook>(Interfaces::ModelRender());
 		g_pEventManagerHook = make_unique<VFTableHook>(Interfaces::EventManager());
 		g_pMaterialSystemHook = make_unique<VFTableHook>(Interfaces::MaterialSystem());
+		g_pIInputSystemHook = make_unique<VFTableHook>(Interfaces::InputSystem());
 
 		g_pOldWindowProc = reinterpret_cast<WNDPROC>(SetWindowLongPtr(g_hWnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(Hooked_WndProc)));
 
@@ -156,6 +159,7 @@ namespace Hooks
 		g_fnOriginalPaintTraverse = g_pVGUIPanelHook->Hook(41, reinterpret_cast<PaintTraverse_t>(Hooked_PaintTraverse));                    // IPanel::PaintTraverse
 		g_fnOriginalPlaySound = g_pMatSurfaceHook->Hook(82, reinterpret_cast<PlaySound_t>(Hooked_PlaySound));                               // ISurface::PlaySound
 		g_fnOriginalDrawModelExecute = g_pModelRenderHook->Hook(21, reinterpret_cast<DrawModelExecute_t>(Hooked_DrawModelExecute));         // IVModelRender::DrawModelExecute
+		g_fnOriginalLockCursor = g_pMatSurfaceHook->Hook(67, reinterpret_cast<LockCursor_t>(Hooked_LockCursor));							// ISurface::LockCursor
 
 		g_bWasInitialized = true;
 	}
@@ -392,5 +396,14 @@ namespace Hooks
 		g_fnOriginalPlaySound(Interfaces::MatSurface(), szFileName);
 
 		Container::Instance().Resolve<AutoAccept>()->PlaySound_Post(szFileName);
+	}
+
+	void __stdcall Hooked_LockCursor()
+	{
+		if (Options::g_bMainWindowOpen) {
+			Interfaces::MatSurface()->UnlockCursor();
+			return;
+		}
+		g_fnOriginalLockCursor(Interfaces::MatSurface());
 	}
 }
