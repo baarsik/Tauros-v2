@@ -53,7 +53,7 @@ namespace Hooks
 	unique_ptr<VFTableHook>            g_pDrawModelExecuteHook = nullptr;
 	unique_ptr<VFTableHook>            g_pEventManagerHook = nullptr;
 	unique_ptr<VFTableHook>            g_pMaterialSystemHook = nullptr;
-	unique_ptr<VFTableHook>			   g_pIInputSystemHook = nullptr;
+	unique_ptr<VFTableHook>            g_pInputSystemHook = nullptr;
 
 	EndScene_t                         g_fnOriginalEndScene = nullptr;
 	Reset_t                            g_fnOriginalReset = nullptr;
@@ -65,7 +65,7 @@ namespace Hooks
 	DrawModelExecute_t                 g_fnOriginalDrawModelExecute = nullptr;
 	OverrideMouseInput_t               g_fnOriginalOverrideMouseInput = nullptr;
 	OverrideConfig_t                   g_fnOriginalOverrideConfig = nullptr;
-	LockCursor_t					   g_fnOriginalLockCursor = nullptr;
+	LockCursor_t                       g_fnOriginalLockCursor = nullptr;
 
 	WNDPROC                            g_pOldWindowProc = nullptr;
 
@@ -93,7 +93,7 @@ namespace Hooks
 		g_pModelRenderHook = make_unique<VFTableHook>(Interfaces::ModelRender());
 		g_pEventManagerHook = make_unique<VFTableHook>(Interfaces::EventManager());
 		g_pMaterialSystemHook = make_unique<VFTableHook>(Interfaces::MaterialSystem());
-		g_pIInputSystemHook = make_unique<VFTableHook>(Interfaces::InputSystem());
+		g_pInputSystemHook = make_unique<VFTableHook>(Interfaces::InputSystem());
 
 		g_pOldWindowProc = reinterpret_cast<WNDPROC>(SetWindowLongPtr(g_hWnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(Hooked_WndProc)));
 

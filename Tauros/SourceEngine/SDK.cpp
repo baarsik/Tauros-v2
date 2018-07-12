@@ -23,7 +23,7 @@ CMoveHelper*        Interfaces::m_pMoveHelper = nullptr;
 CGameMovement*      Interfaces::m_pGameMovement = nullptr;
 CPrediction*        Interfaces::m_pPrediction = nullptr;
 CViewRender*        Interfaces::m_pViewRender = nullptr;
-IInputSystem*		Interfaces::m_InputSystem = nullptr;
+IInputSystem*       Interfaces::m_InputSystem = nullptr;
 
 CreateInterfaceFn GetFactory(HMODULE hMod)
 {

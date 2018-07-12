@@ -45,7 +45,7 @@ namespace Hooks
 	using PaintTraverse_t         = void(__thiscall*)(IPanel*, VPANEL, bool, bool);
 	using PlaySound_t             = void(__thiscall*)(ISurface*, const char*);
 	using DrawModelExecute_t      = void(__thiscall*)(IVModelRender*, IMatRenderContext*, const DrawModelState_t&, const ModelRenderInfo_t&, matrix3x4_t*);
-	using LockCursor_t			  = void(__thiscall*)(ISurface*);
+	using LockCursor_t            = void(__thiscall*)(ISurface*);
 	
 	//---------------------------------------------------
 	// Hooked functions
