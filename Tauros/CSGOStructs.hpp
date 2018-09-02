@@ -43,23 +43,23 @@ public:
 	float C_BaseCombatWeapon::GetSpread()
 	{
 		using GetSpread_t = float(__thiscall*)(void*);
-		return CallVFunction<GetSpread_t>(this, 439)(this);
+		return CallVFunction<GetSpread_t>(this, 436)(this);
 	}
 	CCSWeaponData* GetWeaponData()
 	{
 		if (!this) return nullptr;
 		using CCSWeaponInfo_t = CCSWeaponData*(__thiscall*)(void*);
-		return CallVFunction<CCSWeaponInfo_t>(this, 447)(this);
+		return CallVFunction<CCSWeaponInfo_t>(this, 444)(this);
 	}
 	float C_BaseCombatWeapon::GetInaccuracy()
 	{
 		using GetInaccuracy_t = float(__thiscall*)(void*);
-		return CallVFunction<GetInaccuracy_t>(this, 469)(this);
+		return CallVFunction<GetInaccuracy_t>(this, 467)(this);
 	}
 	void C_BaseCombatWeapon::UpdateAccuracyPenalty()
 	{
 		using UpdateAccuracyPenalty_t = void(__thiscall*)(void*);
-		CallVFunction<UpdateAccuracyPenalty_t>(this, 470)(this);
+		CallVFunction<UpdateAccuracyPenalty_t>(this, 468)(this);
 	}
 
 	std::string GetReadableName()
