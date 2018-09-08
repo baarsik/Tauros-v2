@@ -2,6 +2,7 @@
 
 #include "../Utils.hpp"
 #include "../XorStr.hpp"
+#include "../Constants.h"
 
 IVEngineClient*     Interfaces::m_pEngine = nullptr;
 IBaseClientDLL*     Interfaces::m_pClient = nullptr;
@@ -23,7 +24,8 @@ CMoveHelper*        Interfaces::m_pMoveHelper = nullptr;
 CGameMovement*      Interfaces::m_pGameMovement = nullptr;
 CPrediction*        Interfaces::m_pPrediction = nullptr;
 CViewRender*        Interfaces::m_pViewRender = nullptr;
-IInputSystem*       Interfaces::m_InputSystem = nullptr;
+IInputSystem*       Interfaces::m_pInputSystem = nullptr;
+IEngineSound*       Interfaces::m_pEngineSound = nullptr;
 
 CreateInterfaceFn GetFactory(HMODULE hMod)
 {
@@ -40,8 +42,8 @@ IVEngineClient* Interfaces::Engine()
 {
 	if (!m_pEngine)
 	{
-		const auto pfnFactory = GetFactory(GetModuleHandleA(XorStr("engine.dll")));
-		m_pEngine = CaptureInterface<IVEngineClient>(pfnFactory, XorStr("VEngineClient014"));
+		const auto pfnFactory = GetFactory(GetModuleHandleA(Constants::CsgoFiles::EngineDll));
+		m_pEngine = CaptureInterface<IVEngineClient>(pfnFactory, Constants::Interfaces::VEngineClient);
 	}
 	return m_pEngine;
 }
@@ -49,8 +51,8 @@ IBaseClientDLL* Interfaces::Client()
 {
 	if (!m_pClient)
 	{
-		const auto pfnFactory = GetFactory(GetModuleHandleA(XorStr("client_panorama.dll")));
-		m_pClient = CaptureInterface<IBaseClientDLL>(pfnFactory, XorStr("VClient018"));
+		const auto pfnFactory = GetFactory(GetModuleHandleA(Constants::CsgoFiles::ClientDll));
+		m_pClient = CaptureInterface<IBaseClientDLL>(pfnFactory, Constants::Interfaces::VClient);
 	}
 	return m_pClient;
 }
@@ -58,8 +60,8 @@ IClientEntityList* Interfaces::EntityList()
 {
 	if (!m_pEntityList)
 	{
-		const auto pfnFactory = GetFactory(GetModuleHandleA(XorStr("client_panorama.dll")));
-		m_pEntityList = CaptureInterface<IClientEntityList>(pfnFactory, XorStr("VClientEntityList003"));
+		const auto pfnFactory = GetFactory(GetModuleHandleA(Constants::CsgoFiles::ClientDll));
+		m_pEntityList = CaptureInterface<IClientEntityList>(pfnFactory, Constants::Interfaces::VClientEntityList);
 	}
 	return m_pEntityList;
 }
@@ -76,8 +78,8 @@ IPanel* Interfaces::VGUIPanel()
 {
 	if (!m_pVGuiPanel)
 	{
-		const auto pfnFactory = GetFactory(GetModuleHandleA(XorStr("vgui2.dll")));
-		m_pVGuiPanel = CaptureInterface<IPanel>(pfnFactory, XorStr("VGUI_Panel009"));
+		const auto pfnFactory = GetFactory(GetModuleHandleA(Constants::CsgoFiles::VGUIDll));
+		m_pVGuiPanel = CaptureInterface<IPanel>(pfnFactory, Constants::Interfaces::VGUIPanel);
 	}
 	return m_pVGuiPanel;
 }
@@ -85,8 +87,8 @@ ISurface* Interfaces::MatSurface()
 {
 	if (!m_pVGuiSurface)
 	{
-		const auto pfnFactory = GetFactory(GetModuleHandleA(XorStr("vguimatsurface.dll")));
-		m_pVGuiSurface = CaptureInterface<ISurface>(pfnFactory, XorStr("VGUI_Surface031"));
+		const auto pfnFactory = GetFactory(GetModuleHandleA(Constants::CsgoFiles::VGUIMatSurfaceDll));
+		m_pVGuiSurface = CaptureInterface<ISurface>(pfnFactory, Constants::Interfaces::VGUISurface);
 	}
 	return m_pVGuiSurface;
 }
@@ -94,9 +96,7 @@ CInput* Interfaces::Input()
 {
 	if (!m_pInput)
 	{
-		/*const auto pClientVFTable = *reinterpret_cast<uint32_t**>(Client());
-		m_pInput = *reinterpret_cast<CInput**>(pClientVFTable[15] + 0x1);*/
-		m_pInput = *(CInput**)(Utils::FindSignature(XorStr("client_panorama.dll"), XorStr("B9 ? ? ? ? F3 0F 11 04 24 FF 50 10")) + 1);
+		m_pInput = *Constants::Signatures::Input.Find<CInput**>();
 	}
 	return m_pInput;
 }
@@ -104,8 +104,8 @@ IGameEventManager2* Interfaces::EventManager()
 {
 	if (!m_pGameEventManager2)
 	{
-		const auto pfnFactory = GetFactory(GetModuleHandleA(XorStr("engine.dll")));
-		m_pGameEventManager2 = CaptureInterface<IGameEventManager2>(pfnFactory, XorStr("GAMEEVENTSMANAGER002"));
+		const auto pfnFactory = GetFactory(GetModuleHandleA(Constants::CsgoFiles::EngineDll));
+		m_pGameEventManager2 = CaptureInterface<IGameEventManager2>(pfnFactory, Constants::Interfaces::GameEventsManager);
 	}
 	return m_pGameEventManager2;
 }
@@ -113,8 +113,8 @@ IEngineTrace* Interfaces::EngineTrace()
 {
 	if (!m_pEngineTrace)
 	{
-		const auto pfnFactory = GetFactory(GetModuleHandleA(XorStr("engine.dll")));
-		m_pEngineTrace = CaptureInterface<IEngineTrace>(pfnFactory, XorStr("EngineTraceClient004"));
+		const auto pfnFactory = GetFactory(GetModuleHandleA(Constants::CsgoFiles::EngineDll));
+		m_pEngineTrace = CaptureInterface<IEngineTrace>(pfnFactory, Constants::Interfaces::EngineTraceClient);
 	}
 	return m_pEngineTrace;
 }
@@ -122,8 +122,8 @@ ICvar* Interfaces::CVar()
 {
 	if (!m_pCVar)
 	{
-		const auto pfnFactory = GetFactory(GetModuleHandleA(XorStr("vstdlib.dll")));
-		m_pCVar = CaptureInterface<ICvar>(pfnFactory, XorStr("VEngineCvar007"));
+		const auto pfnFactory = GetFactory(GetModuleHandleA(Constants::CsgoFiles::VStdLibDll));
+		m_pCVar = CaptureInterface<ICvar>(pfnFactory, Constants::Interfaces::VEngineCvar);
 	}
 	return m_pCVar;
 }
@@ -140,8 +140,8 @@ IVModelInfo* Interfaces::ModelInfo()
 {
 	if (!m_pModelInfo)
 	{
-		const auto pfnFactory = GetFactory(GetModuleHandleA(XorStr("engine.dll")));
-		m_pModelInfo = CaptureInterface<IVModelInfo>(pfnFactory, XorStr("VModelInfoClient004"));
+		const auto pfnFactory = GetFactory(GetModuleHandleA(Constants::CsgoFiles::EngineDll));
+		m_pModelInfo = CaptureInterface<IVModelInfo>(pfnFactory, Constants::Interfaces::VModelInfoClient);
 	}
 	return m_pModelInfo;
 }
@@ -149,8 +149,8 @@ IVRenderView* Interfaces::RenderView()
 {
 	if (!m_pRenderView)
 	{
-		const auto pfnFactory = GetFactory(GetModuleHandleA(XorStr("engine.dll")));
-		m_pRenderView = CaptureInterface<IVRenderView>(pfnFactory, XorStr("VEngineRenderView014"));
+		const auto pfnFactory = GetFactory(GetModuleHandleA(Constants::CsgoFiles::EngineDll));
+		m_pRenderView = CaptureInterface<IVRenderView>(pfnFactory, Constants::Interfaces::VEngineRenderView);
 	}
 	return m_pRenderView;
 }
@@ -158,8 +158,8 @@ IVModelRender* Interfaces::ModelRender()
 {
 	if (!m_pModelRender)
 	{
-		const auto pfnFactory = GetFactory(GetModuleHandleA(XorStr("engine.dll")));
-		m_pModelRender = CaptureInterface<IVModelRender>(pfnFactory, XorStr("VEngineModel016"));
+		const auto pfnFactory = GetFactory(GetModuleHandleA(Constants::CsgoFiles::EngineDll));
+		m_pModelRender = CaptureInterface<IVModelRender>(pfnFactory, Constants::Interfaces::VEngineModel);
 	}
 	return m_pModelRender;
 }
@@ -167,8 +167,8 @@ IVEffects* Interfaces::Effects()
 {
 	if (!m_pEffects)
 	{
-		const auto pfnFactory = GetFactory(GetModuleHandleA(XorStr("engine.dll")));
-		m_pEffects = CaptureInterface<IVEffects>(pfnFactory, XorStr("VEngineEffects001"));
+		const auto pfnFactory = GetFactory(GetModuleHandleA(Constants::CsgoFiles::EngineDll));
+		m_pEffects = CaptureInterface<IVEffects>(pfnFactory, Constants::Interfaces::VEngineEffects);
 	}
 	return m_pEffects;
 }
@@ -176,25 +176,34 @@ IMaterialSystem* Interfaces::MaterialSystem()
 {
 	if (!m_pMaterialSystem)
 	{
-		const auto pfnFactory = GetFactory(GetModuleHandleA(XorStr("materialsystem.dll")));
-		m_pMaterialSystem = CaptureInterface<IMaterialSystem>(pfnFactory, XorStr("VMaterialSystem080"));
+		const auto pfnFactory = GetFactory(GetModuleHandleA(Constants::CsgoFiles::MaterialSystemDll));
+		m_pMaterialSystem = CaptureInterface<IMaterialSystem>(pfnFactory, Constants::Interfaces::VMaterialSystem);
 	}
 	return m_pMaterialSystem;
 }
 IInputSystem* Interfaces::InputSystem()
 {
-	if (!m_InputSystem)
+	if (!m_pInputSystem)
 	{
-		const auto pfnFactory = GetFactory(GetModuleHandleA(XorStr("inputsystem.dll")));
-		m_InputSystem = CaptureInterface<IInputSystem>(pfnFactory, XorStr("InputSystemVersion001"));
+		const auto pfnFactory = GetFactory(GetModuleHandleA(Constants::CsgoFiles::InputSystemDll));
+		m_pInputSystem = CaptureInterface<IInputSystem>(pfnFactory, Constants::Interfaces::InputSystemVersion);
 	}
-	return m_InputSystem;
+	return m_pInputSystem;
+}
+IEngineSound* Interfaces::EngineSound()
+{
+	if (!m_pEngineSound)
+	{
+		const auto pfnFactory = GetFactory(GetModuleHandleA(Constants::CsgoFiles::EngineDll));
+		m_pEngineSound = CaptureInterface<IEngineSound>(pfnFactory, Constants::Interfaces::IEngineSoundClient);
+	}
+	return m_pEngineSound;
 }
 CMoveHelper* Interfaces::MoveHelper()
 {
 	if (!m_pMoveHelper)
 	{
-		m_pMoveHelper = **reinterpret_cast<CMoveHelper***>(Utils::FindSignature(XorStr("client_panorama.dll"), XorStr("8B 0D ? ? ? ? 8B 46 08 68")) + 2);
+		m_pMoveHelper = **Constants::Signatures::MoveHelper.Find<CMoveHelper***>();
 	}
 	return m_pMoveHelper;
 }
@@ -202,8 +211,8 @@ CGameMovement* Interfaces::GameMovement()
 {
 	if (!m_pGameMovement)
 	{
-		const auto pfnFactory = GetFactory(GetModuleHandleA(XorStr("client_panorama.dll")));
-		m_pGameMovement = CaptureInterface<CGameMovement>(pfnFactory, XorStr("GameMovement001"));
+		const auto pfnFactory = GetFactory(GetModuleHandleA(Constants::CsgoFiles::ClientDll));
+		m_pGameMovement = CaptureInterface<CGameMovement>(pfnFactory, Constants::Interfaces::GameMovement);
 	}
 	return m_pGameMovement;
 }
@@ -211,8 +220,8 @@ CPrediction* Interfaces::Prediction()
 {
 	if (!m_pPrediction)
 	{
-		const auto pfnFactory = GetFactory(GetModuleHandleA(XorStr("client_panorama.dll")));
-		m_pPrediction = CaptureInterface<CPrediction>(pfnFactory, XorStr("VClientPrediction001"));
+		const auto pfnFactory = GetFactory(GetModuleHandleA(Constants::CsgoFiles::ClientDll));
+		m_pPrediction = CaptureInterface<CPrediction>(pfnFactory, Constants::Interfaces::VClientPrediction);
 	}
 	return m_pPrediction;
 }

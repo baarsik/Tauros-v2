@@ -8,8 +8,9 @@
         Title="Launcher" Width="320" WindowStartupLocation="CenterScreen" SizeToContent="Height" ResizeMode="NoResize">
     <Grid>
         <StackPanel Margin="5">
-            <TextBlock Margin="0,5,0,0" Text="Cerberus.Tauros C# Injector (2017-12-18)" HorizontalAlignment="Center" FontWeight="Bold"></TextBlock>
+            <TextBlock Margin="0,5,0,0" Text="{Binding Path=Title, Mode=OneWay}" HorizontalAlignment="Center" FontWeight="Bold"></TextBlock>
             <Button Height="36" Margin="0,5" Content="Inject" Click="Inject_Click"></Button>
+            <TextBlock Margin="0,0,0,0" Text="{Binding Path=Status, Mode=OneWay}" HorizontalAlignment="Left"></TextBlock>
         </StackPanel>
     </Grid>
 </Window>

@@ -1,9 +1,10 @@
 // Basic stuff
 #include "XorStr.hpp"
+#include "Constants.h"
 #include "Container.hpp"
 #include "VFTableHook.hpp"
 #include "MaterialHelper.hpp"
-#include "SignatureHelper.hpp"
+#include "SignatureHelper.h"
 #include "Hooks.hpp"
 #include "Options.hpp"
 #include "Utils.hpp"
@@ -29,7 +30,6 @@
 #include "Hacks/ESP.hpp"
 #include "Hacks/RankRevealer.hpp"
 #include "Hacks/RCS.hpp"
-#include "Hacks/SkinChanger.hpp"
 #include "Hacks/Trigger.hpp"
 #include "Hacks/VisualMisc.hpp"
 
@@ -54,11 +54,12 @@ namespace Hooks
 	unique_ptr<VFTableHook>            g_pEventManagerHook = nullptr;
 	unique_ptr<VFTableHook>            g_pMaterialSystemHook = nullptr;
 	unique_ptr<VFTableHook>            g_pInputSystemHook = nullptr;
+	unique_ptr<VFTableHook>            g_pEngineSoundHook = nullptr;
 
 	EndScene_t                         g_fnOriginalEndScene = nullptr;
 	Reset_t                            g_fnOriginalReset = nullptr;
 	CreateMove_t                       g_fnOriginalCreateMove = nullptr;
-	PlaySound_t                        g_fnOriginalPlaySound = nullptr;
+	EmitSound_t                        g_fnOriginalEmitSound = nullptr;
 	PaintTraverse_t                    g_fnOriginalPaintTraverse = nullptr;
 	FrameStageNotify_t                 g_fnOriginalFrameStageNotify = nullptr;
 	OverrideView_t                     g_fnOriginalOverrideView = nullptr;
@@ -94,6 +95,7 @@ namespace Hooks
 		g_pEventManagerHook = make_unique<VFTableHook>(Interfaces::EventManager());
 		g_pMaterialSystemHook = make_unique<VFTableHook>(Interfaces::MaterialSystem());
 		g_pInputSystemHook = make_unique<VFTableHook>(Interfaces::InputSystem());
+		g_pEngineSoundHook = make_unique<VFTableHook>(Interfaces::EngineSound());
 
 		g_pOldWindowProc = reinterpret_cast<WNDPROC>(SetWindowLongPtr(g_hWnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(Hooked_WndProc)));
 
@@ -120,7 +122,6 @@ namespace Hooks
 		container->Register<NoFlash>();
 		container->Register<RankRevealer>();
 		container->Register<RCS>();
-		container->Register<SkinChanger>();
 		container->Register<Trigger>();
 	}
 
@@ -157,7 +158,7 @@ namespace Hooks
 		g_fnOriginalOverrideMouseInput = g_pClientModeHook->Hook(23, reinterpret_cast<OverrideMouseInput_t>(Hooked_OverrideMouseInput));    // IClientMode::OverrideMouseInput
 		g_fnOriginalOverrideConfig = g_pMaterialSystemHook->Hook(21, reinterpret_cast<OverrideConfig_t>(Hooked_OverrideConfig));            // IMaterialSystem::OverrideConfig
 		g_fnOriginalPaintTraverse = g_pVGUIPanelHook->Hook(41, reinterpret_cast<PaintTraverse_t>(Hooked_PaintTraverse));                    // IPanel::PaintTraverse
-		g_fnOriginalPlaySound = g_pMatSurfaceHook->Hook(82, reinterpret_cast<PlaySound_t>(Hooked_PlaySound));                               // ISurface::PlaySound
+		g_fnOriginalEmitSound = g_pEngineSoundHook->Hook(5, reinterpret_cast<EmitSound_t>(Hooked_EmitSound));                              // IEngineSound::EmitSound
 		g_fnOriginalDrawModelExecute = g_pModelRenderHook->Hook(21, reinterpret_cast<DrawModelExecute_t>(Hooked_DrawModelExecute));         // IVModelRender::DrawModelExecute
 		g_fnOriginalLockCursor = g_pMatSurfaceHook->Hook(67, reinterpret_cast<LockCursor_t>(Hooked_LockCursor));							// ISurface::LockCursor
 
@@ -176,7 +177,6 @@ namespace Hooks
 		if (_ReturnAddress() != wanted_ret_address) //Panorama fix credits to NuII from UC
 			return g_fnOriginalEndScene(pDevice);
 
-		//backup render states
 		DWORD colorwrite, srgbwrite;
 		pDevice->GetRenderState(D3DRS_COLORWRITEENABLE, &colorwrite);
 		pDevice->GetRenderState(D3DRS_SRGBWRITEENABLE, &srgbwrite);
@@ -185,9 +185,6 @@ namespace Hooks
 		pDevice->SetRenderState(D3DRS_COLORWRITEENABLE, 0xffffffff);
 		//removes the source engine color correction
 		pDevice->SetRenderState(D3DRS_SRGBWRITEENABLE, false);
-
-		//draw here
-
 
 		const auto gui = Container::Instance().Resolve<GUI>();
 		gui->UpdateCursorVisibility();
@@ -199,14 +196,11 @@ namespace Hooks
 
 		Container::Instance().Resolve<ESP>()->EndScene_Pre(pDevice);
 
-
 		ImGui::Render();
 		drawManager->EndRendering();
 
-
 		pDevice->SetRenderState(D3DRS_COLORWRITEENABLE, colorwrite);
 		pDevice->SetRenderState(D3DRS_SRGBWRITEENABLE, srgbwrite);
-
 
 		return g_fnOriginalEndScene(pDevice);
 	}
@@ -353,7 +347,6 @@ namespace Hooks
 	{
 		Container::Instance().Resolve<NoFlash>()->FrameStageNotify_Pre(stage);
 		Container::Instance().Resolve<RCS>()->FrameStageNotify_Pre(stage);
-		Container::Instance().Resolve<SkinChanger>()->FrameStageNotify_Pre(stage);
 
 		g_fnOriginalFrameStageNotify(Interfaces::Client(), stage);
 
@@ -391,16 +384,17 @@ namespace Hooks
 		Container::Instance().Resolve<AimAssist>()->OverrideMouseInput_Post(x, y);
 	}
 
-	void __stdcall Hooked_PlaySound(const char* szFileName)
+	void __stdcall Hooked_EmitSound(IRecipientFilter& filter, int entIndex, int channel, const char* soundEntry, unsigned int soundEntryHash, const char* sample, float volume, int seed, float attenuation, int flags, int pitch, const Vector* origin, const Vector* direction, void* utlVecOrigins, bool updatePositions, float soundTime, int speakerEntity, /*StartSoundParams_t&*/ void* params)
 	{
-		g_fnOriginalPlaySound(Interfaces::MatSurface(), szFileName);
+		Container::Instance().Resolve<AutoAccept>()->EmitSound_Pre(filter, entIndex, channel, soundEntry, soundEntryHash, sample, volume, seed, attenuation, flags, pitch, origin, direction, utlVecOrigins, updatePositions, soundTime, speakerEntity, params);
 
-		Container::Instance().Resolve<AutoAccept>()->PlaySound_Post(szFileName);
+		g_fnOriginalEmitSound(Interfaces::EngineSound(), filter, entIndex, channel, soundEntry, soundEntryHash, sample, volume, seed, attenuation, flags, pitch, origin, direction, utlVecOrigins, updatePositions, soundTime, speakerEntity, params);
 	}
 
 	void __stdcall Hooked_LockCursor()
 	{
-		if (Options::g_bMainWindowOpen) {
+		if (Options::g_bMainWindowOpen)
+		{
 			Interfaces::MatSurface()->UnlockCursor();
 			return;
 		}

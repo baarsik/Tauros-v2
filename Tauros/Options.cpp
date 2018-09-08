@@ -97,12 +97,9 @@ namespace Options
 	int g_iHandsDisplay = 0;
 	bool g_bRankRevealerEnabled = true;
 
-	// Skin
-	bool g_bSkinChangerEnabled = false;
-
 	// Automation
 	bool g_bAutoPistolEnabled = true;
-    bool g_bBHopEnabled = true;
-	bool g_bAutoStrafeEnabled = true;
+    bool g_bBHopEnabled = false;
+	bool g_bAutoStrafeEnabled = false;
 	bool g_bAutoAcceptEnabled = true;
 }

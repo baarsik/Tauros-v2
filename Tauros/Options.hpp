@@ -77,9 +77,6 @@ namespace Options
 	extern int g_iHandsDisplay;
 	extern bool g_bRankRevealerEnabled;
 
-	// Skin
-	extern bool g_bSkinChangerEnabled;
-
 	// Automation
 	extern bool g_bAutoPistolEnabled;
 	extern bool g_bBHopEnabled;

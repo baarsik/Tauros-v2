@@ -43,7 +43,7 @@ namespace Hooks
 	using OverrideView_t          = void(__thiscall*)(IClientMode*, CViewSetup*);
 	using OverrideConfig_t        = bool(__thiscall*)(IMaterialSystem*, MaterialSystem_Config_t*, bool);
 	using PaintTraverse_t         = void(__thiscall*)(IPanel*, VPANEL, bool, bool);
-	using PlaySound_t             = void(__thiscall*)(ISurface*, const char*);
+	using EmitSound_t             = void(__thiscall*)(IEngineSound*, IRecipientFilter&, int, int, const char*, unsigned int, const char*, float, int, float, int, int, const Vector*, const Vector*, void*, bool, float, int, /*StartSoundParams_t&*/ void*);
 	using DrawModelExecute_t      = void(__thiscall*)(IVModelRender*, IMatRenderContext*, const DrawModelState_t&, const ModelRenderInfo_t&, matrix3x4_t*);
 	using LockCursor_t            = void(__thiscall*)(ISurface*);
 	
@@ -56,7 +56,7 @@ namespace Hooks
 	void      __stdcall Hooked_OverrideMouseInput(float*, float*);
 	void      __stdcall Hooked_CreateMove(int, float, bool, bool&);
 	void      __stdcall Hooked_CreateMove_Proxy(int, float, bool);
-	void      __stdcall Hooked_PlaySound(const char*);
+	void      __stdcall Hooked_EmitSound(IRecipientFilter&, int, int, const char*, unsigned int, const char*, float, int, float, int, int, const Vector*, const Vector*, void*, bool, float, int, /*StartSoundParams_t&*/ void*);
 	void      __stdcall Hooked_PaintTraverse(VPANEL, bool, bool);
 	void      __stdcall Hooked_FrameStageNotify(ClientFrameStage_t);
 	void      __stdcall Hooked_OverrideView(CViewSetup*);

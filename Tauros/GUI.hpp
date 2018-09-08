@@ -8,10 +8,8 @@ enum Window : int
 	Main = 0,
 	Aim,
 	Visuals,
-	Skinchanger,
-	Automation,
-	Configs
-};    
+	Automation
+};
 
 std::vector<std::string> TargetsAffected = { XorStr("None"), XorStr("Allies"), XorStr("Enemies"), XorStr("Allies and enemies") };
 
@@ -139,9 +137,7 @@ public:
 			XorStr(ICON_FA_INFO " Main"),
 			XorStr(ICON_FA_CROSSHAIRS " Aim"),
 			XorStr(ICON_FA_EYE " Visuals"),
-			XorStr(ICON_FA_PAINT_BRUSH " Skin Changer"),
-			XorStr(ICON_FA_COGS " Automation"),
-			XorStr(ICON_FA_SLIDERS " Configs")
+			XorStr(ICON_FA_COGS " Automation")
 		};
 		for (auto windowName : vecWindowNames)
 		{
@@ -151,19 +147,19 @@ public:
 		const auto menuEnd = ImVec2(totalWidth + menuStart.x, menuStart.y + 48 * m_flAutoScale);
 		ImGui::SameLine(menuStart.x);
 		ImGui::GetCurrentWindow()->DrawList->AddRectFilled(ImVec2(menuStart.x - 1, menuStart.y - 1), ImVec2(menuEnd.x + 1, menuEnd.y + 1), ImGui::GetColorU32(ImVec4("#fb4248")), style->FrameRounding);
-		for (int i = Window::Main; i <= Window::Configs; i++)
+		for (int i = Window::Main; i <= Window::Automation; i++)
 		{
 			SetButtonStyle(m_openedWindow == i);
 			const auto roundingCorners = i == Window::Main
 				? ImDrawCornerFlags_Left
-				: i == Window::Configs
+				: i == Window::Automation
 					? ImDrawCornerFlags_Right
 					: 0;
 
 			if (ImGui::ButtonEx(vecWindowNames[i], ImVec2(ImGui::CalcTextSize(vecWindowNames[i]).x + 48 * m_flAutoScale, 48 * m_flAutoScale), 0, roundingCorners))
 				m_openedWindow = Window(i);
 
-			if (i != Window::Configs) ImGui::SameLine(0, 1.f);
+			if (i != Window::Automation) ImGui::SameLine(0, 1.f);
 		}
 		ImGui::End();
 		ImGui::PopFont();
@@ -324,11 +320,6 @@ public:
 			ImGui::Combo(XorStr("Hands style"), &Options::g_iHandsDisplay, Options::g_szHandsDisplay, IM_ARRAYSIZE(Options::g_szHandsDisplay));
 			ImGui::Checkbox(XorStr("Reveal ranks"), &Options::g_bRankRevealerEnabled);
 		}
-		else if (m_openedWindow == Window::Skinchanger)
-		{
-			ImGui::Columns(3, nullptr, false);
-			ImGui::Checkbox(XorStr("Enabled"), &Options::g_bSkinChangerEnabled);
-		}
 		else if (m_openedWindow == Window::Automation)
 		{
 			ImGui::Columns(3, nullptr, false);
@@ -337,7 +328,7 @@ public:
 			ImGui::Checkbox(XorStr("Auto strafe"), &Options::g_bAutoStrafeEnabled);
 			ImGui::Checkbox(XorStr("Auto accept"), &Options::g_bAutoAcceptEnabled);
 		}
-		else if (m_openedWindow == Window::Configs)
+		else if (m_openedWindow == Window::Automation)
 		{
 			ImGui::Columns(3, nullptr, false);
 		}

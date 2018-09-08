@@ -81,6 +81,12 @@
     <ClCompile Include="DrawManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Constants.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SignatureHelper.cpp">
+      <Filter>Helpers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Options.hpp">
@@ -248,9 +254,6 @@
     <ClInclude Include="Hacks\RCS.hpp">
       <Filter>Hacks</Filter>
     </ClInclude>
-    <ClInclude Include="Hacks\SkinChanger.hpp">
-      <Filter>Hacks</Filter>
-    </ClInclude>
     <ClInclude Include="Hacks\Trigger.hpp">
       <Filter>Hacks</Filter>
     </ClInclude>
@@ -276,9 +279,6 @@
       <Filter>Hacks</Filter>
     </ClInclude>
     <ClInclude Include="MaterialHelper.hpp">
-      <Filter>Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="SignatureHelper.hpp">
       <Filter>Helpers</Filter>
     </ClInclude>
     <ClInclude Include="Hacks\RankRevealer.hpp">
@@ -328,6 +328,18 @@
     </ClInclude>
     <ClInclude Include="bf_read.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Signature.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SignatureHelper.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceEngine\IEngineSound.hpp">
+      <Filter>SourceEngine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

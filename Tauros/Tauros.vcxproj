@@ -171,6 +171,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Constants.cpp" />
     <ClCompile Include="DrawManager.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Hooks.cpp" />
@@ -179,6 +180,7 @@
     <ClCompile Include="ImGUI\imgui_draw.cpp" />
     <ClCompile Include="NetvarManager.cpp" />
     <ClCompile Include="Options.cpp" />
+    <ClCompile Include="SignatureHelper.cpp" />
     <ClCompile Include="SourceEngine\characterset.cpp" />
     <ClCompile Include="SourceEngine\Convar.cpp" />
     <ClCompile Include="SourceEngine\CRC.cpp" />
@@ -192,6 +194,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bf_read.hpp" />
+    <ClInclude Include="Constants.h" />
     <ClInclude Include="Container.hpp" />
     <ClInclude Include="CSGOStructs.hpp" />
     <ClInclude Include="DrawManager.hpp" />
@@ -211,7 +214,6 @@
     <ClInclude Include="Hacks\ESP.hpp" />
     <ClInclude Include="Hacks\RankRevealer.hpp" />
     <ClInclude Include="Hacks\RCS.hpp" />
-    <ClInclude Include="Hacks\SkinChanger.hpp" />
     <ClInclude Include="Hacks\Trigger.hpp" />
     <ClInclude Include="Hacks\VisualMisc.hpp" />
     <ClInclude Include="Hooks.hpp" />
@@ -224,7 +226,8 @@
     <ClInclude Include="MD5.hpp" />
     <ClInclude Include="NetvarManager.hpp" />
     <ClInclude Include="Options.hpp" />
-    <ClInclude Include="SignatureHelper.hpp" />
+    <ClInclude Include="Signature.hpp" />
+    <ClInclude Include="SignatureHelper.h" />
     <ClInclude Include="SourceEngine\CCSWeaponData.hpp" />
     <ClInclude Include="SourceEngine\CGlobalVarsBase.hpp" />
     <ClInclude Include="SourceEngine\CHandle.hpp" />
@@ -247,6 +250,7 @@
     <ClInclude Include="SourceEngine\IClientUnknown.hpp" />
     <ClInclude Include="SourceEngine\IConVar.hpp" />
     <ClInclude Include="SourceEngine\ICvar.hpp" />
+    <ClInclude Include="SourceEngine\IEngineSound.hpp" />
     <ClInclude Include="SourceEngine\IEngineTrace.hpp" />
     <ClInclude Include="SourceEngine\IGameEvents.hpp" />
     <ClInclude Include="SourceEngine\IHandleEntity.hpp" />
