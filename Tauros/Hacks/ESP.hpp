@@ -90,7 +90,7 @@ private:
 			? ImColor(Options::g_fESPEnemyColor[0] * 0.4f, Options::g_fESPEnemyColor[1] * 0.4f, Options::g_fESPEnemyColor[2] * 0.4f)
 			: ImColor(Options::g_fESPAllyColor[0] * 0.4f, Options::g_fESPAllyColor[1] * 0.4f, Options::g_fESPAllyColor[2] * 0.4f);
 
-		DrawOutlinedRect(x, y + 1, width, height - 2, background);
+		m_pDrawManager->AddRectFilled(ImVec2(x - 2, y - 1), ImVec2(x + width + 2, y + height + 1), ImColor(0.f, 0.f, 0.f, 0.5f));
 		m_pDrawManager->AddRectFilled(ImVec2(x - 1, y), ImVec2(x + width + 1, y + height), background);
 		m_pDrawManager->AddRectFilled(ImVec2(x - 1, y), ImVec2(x + width * healthNormalized + 1, y + height), foreground);
 	}

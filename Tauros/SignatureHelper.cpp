@@ -26,7 +26,7 @@ void SignatureHelper::SetClanTag(const char* tag, const char* name) const
 
 void SignatureHelper::AcceptCompetitiveMatch() const
 {
-	m_fnSetLocalPlayerReady("");
+	m_fnSetLocalPlayerReady("accept");
 }
 
 void SignatureHelper::ServerRankRevealAll() const
