@@ -61,6 +61,7 @@ namespace Options
 
 	// Visuals (1) - ESP
     bool g_bESPEnabled = true;
+	int g_iESPFullDisplayKey = 16;
     int g_iESPShowBoxes = 0;
 	int g_iESPShowHealth = 1;
 	int g_iESPShowBones = 0;

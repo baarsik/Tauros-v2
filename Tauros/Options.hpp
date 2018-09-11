@@ -45,6 +45,7 @@ namespace Options
 
 	// Visuals (1) - ESP
     extern bool g_bESPEnabled;
+	extern int g_iESPFullDisplayKey;
     extern int g_iESPShowBoxes;
 	extern int g_iESPShowHealth;
 	extern int g_iESPShowBones;

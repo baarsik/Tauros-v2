@@ -15,7 +15,7 @@ public:
 
 	void EndScene_Pre(IDirect3DDevice9* pDevice)
 	{
-		if (!Options::g_bESPEnabled || !Interfaces::Engine()->IsInGame())
+		if (!Options::g_bESPEnabled && !IsFullESPKeyPressed() || !Interfaces::Engine()->IsInGame())
 			return;
 
 		const auto pLocal = C_CSPlayer::GetLocalPlayer();
@@ -27,6 +27,11 @@ private:
 	std::shared_ptr<GUI> m_pGUI;
 	std::shared_ptr<SignatureHelper> m_pSignatureHelper;
 	matrix3x4_t m_pBoneToWorldOut[128];
+
+	bool IsFullESPKeyPressed() const
+	{
+		return GetAsyncKeyState(Options::KeysID[Options::g_iESPFullDisplayKey]);
+	}
 
 	void PlayerESP(IDirect3DDevice9* pDevice, C_CSPlayer* pLocal)
 	{
@@ -69,11 +74,13 @@ private:
 
 	void RenderHealth(IDirect3DDevice9* pDevice, C_CSPlayer* pLocal, C_CSPlayer* pTarget, Vector vScreenHead, Vector vScreenOrigin) const
 	{
-		if (Options::g_iESPShowHealth == 0)
+		const auto isFullEsp = IsFullESPKeyPressed();
+
+		if (Options::g_iESPShowHealth == 0 && !isFullEsp)
 			return;
 
 		const auto isEnemy = pLocal->GetTeamNum() != pTarget->GetTeamNum() || Options::g_bDeathmatch;
-		if (Options::g_iESPShowHealth == (isEnemy ? 1 : 2))
+		if (Options::g_iESPShowHealth == (isEnemy ? 1 : 2) && !isFullEsp)
 			return;
 
 		const auto width = abs(vScreenHead.y - vScreenOrigin.y) * 0.65f;
@@ -97,11 +104,13 @@ private:
 
 	void RenderBoxes(IDirect3DDevice9* pDevice, C_CSPlayer* pLocal, C_CSPlayer* pTarget, Vector vScreenHead, Vector vScreenOrigin) const
 	{
-		if (Options::g_iESPShowBoxes == 0)
+		const auto isFullEsp = IsFullESPKeyPressed();
+
+		if (Options::g_iESPShowBoxes == 0 && !isFullEsp)
 			return;
 
 		const auto isEnemy = pLocal->GetTeamNum() != pTarget->GetTeamNum() || Options::g_bDeathmatch;
-		if (Options::g_iESPShowBoxes == (isEnemy ? 1 : 2))
+		if (Options::g_iESPShowBoxes == (isEnemy ? 1 : 2) && !isFullEsp)
 			return;
 
 		const auto height = abs(vScreenHead.y - vScreenOrigin.y);
@@ -115,15 +124,17 @@ private:
 
 	void RenderTop(IDirect3DDevice9* pDevice, C_CSPlayer* pLocal, C_CSPlayer* pTarget, Vector vScreenHead) const
 	{
-		if (Options::g_iESPShowNames == 0)
+		const auto isFullEsp = IsFullESPKeyPressed();
+
+		if (Options::g_iESPShowNames == 0 && !isFullEsp)
 			return;
 
 		const auto isEnemy = pLocal->GetTeamNum() != pTarget->GetTeamNum() || Options::g_bDeathmatch;
-		if (Options::g_iESPShowNames == (isEnemy ? 1 : 2))
+		if (Options::g_iESPShowNames == (isEnemy ? 1 : 2) && !isFullEsp)
 			return;
 
 		int y;
-		if (Options::g_iESPShowHealth == 0 || Options::g_iESPShowHealth == (isEnemy ? 1 : 2))
+		if ((Options::g_iESPShowHealth == 0 || Options::g_iESPShowHealth == (isEnemy ? 1 : 2)) && !isFullEsp)
 			y = int(vScreenHead.y);
 		else 
 			y = int(vScreenHead.y - 4 * 2 * m_pGUI->GetScale()); // 4 -> healthBox height
@@ -135,12 +146,13 @@ private:
 	
 	void RenderBottom(IDirect3DDevice9* pDevice, C_CSPlayer* pLocal, C_CSPlayer* pTarget, Vector vScreenOrigin) const
 	{
-		if (Options::g_iESPShowDistance == 0 && Options::g_iESPShowWeapon == 0)
+		const auto isFullEsp = IsFullESPKeyPressed();
+		if (Options::g_iESPShowDistance == 0 && Options::g_iESPShowWeapon == 0 && !isFullEsp)
 			return;
 
 		const auto isEnemy = pLocal->GetTeamNum() != pTarget->GetTeamNum() || Options::g_bDeathmatch;
-		const auto shouldDrawDistance = Options::g_iESPShowDistance == 3 || Options::g_iESPShowDistance == (isEnemy ? 2 : 1);
-		const auto shouldDrawWeapon = Options::g_iESPShowWeapon == 3 || Options::g_iESPShowWeapon == (isEnemy ? 2 : 1);
+		const auto shouldDrawDistance = Options::g_iESPShowDistance == 3 || Options::g_iESPShowDistance == (isEnemy ? 2 : 1) || isFullEsp;
+		const auto shouldDrawWeapon = Options::g_iESPShowWeapon == 3 || Options::g_iESPShowWeapon == (isEnemy ? 2 : 1) || isFullEsp;
 		if (!shouldDrawDistance && !shouldDrawWeapon)
 			return;
 
@@ -161,12 +173,16 @@ private:
 
 	void RenderBones(IDirect3DDevice9* pDevice, C_CSPlayer* pLocal, C_CSPlayer* pTarget)
 	{
-		if (Options::g_iESPShowBones == 0)
-			return;
-
 		const auto isEnemy = pLocal->GetTeamNum() != pTarget->GetTeamNum() || Options::g_bDeathmatch;
-		if (Options::g_iESPShowBones == (isEnemy ? 1 : 2))
-			return;
+
+		if (!IsFullESPKeyPressed())
+		{
+			if (Options::g_iESPShowBones == 0)
+				return;
+
+			if (Options::g_iESPShowBones == (isEnemy ? 1 : 2))
+				return;
+		}
 
 		const auto pStudioModel = Interfaces::ModelInfo()->GetStudioModel(pTarget->GetModel());
 		if (!pStudioModel)

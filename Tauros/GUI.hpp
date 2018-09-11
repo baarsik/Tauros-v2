@@ -273,6 +273,7 @@ public:
 			DrawSpecialText(XorStr("ESP"), XorStr(""));
 			ImGui::Checkbox(XorStr("Enabled"), &Options::g_bESPEnabled);
 			ImGui::Checkbox(XorStr("Deathmatch"), &Options::g_bDeathmatch);
+			ImGui::Combo(XorStr("Full ESP Key"), &Options::g_iESPFullDisplayKey, Options::Keys, IM_ARRAYSIZE(Options::Keys));
 			ImGui::Combo(XorStr("Boxes"), &Options::g_iESPShowBoxes, TargetsAffected);
 			ImGui::Combo(XorStr("Health"), &Options::g_iESPShowHealth, TargetsAffected);
 			ImGui::Combo(XorStr("Bones"), &Options::g_iESPShowBones, TargetsAffected);
