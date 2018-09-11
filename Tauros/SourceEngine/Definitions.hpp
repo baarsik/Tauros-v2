@@ -80,7 +80,8 @@ enum class LifeState
 	LIFE_DEAD = 2 // dead. lying still.
 };
 
-enum ItemDefinitionIndex : int {
+enum ItemDefinitionIndex : short
+{
 	WEAPON_DEAGLE = 1,
 	WEAPON_ELITE = 2,
 	WEAPON_FIVESEVEN = 3,
@@ -95,6 +96,7 @@ enum ItemDefinitionIndex : int {
 	WEAPON_M4A1 = 16,
 	WEAPON_MAC10 = 17,
 	WEAPON_P90 = 19,
+	WEAPON_MP5SD = 23,
 	WEAPON_UMP45 = 24,
 	WEAPON_XM1014 = 25,
 	WEAPON_BIZON = 26,

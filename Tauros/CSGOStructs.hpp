@@ -80,6 +80,7 @@ public:
 		case WEAPON_M4A1: return XorStr("M4A4");
 		case WEAPON_MAC10: return XorStr("MAC-10");
 		case WEAPON_P90: return XorStr("P90");
+		case WEAPON_MP5SD: return XorStr("MP5-SD");
 		case WEAPON_UMP45: return XorStr("UMP-45");
 		case WEAPON_XM1014: return XorStr("XM1014");
 		case WEAPON_BIZON: return XorStr("PP-Bizon");
@@ -145,10 +146,10 @@ public:
 		static int m_nFallbackStatTrak = NetvarManager::Instance()->GetOffset(XorStr("DT_BaseAttributableItem"), XorStr("m_nFallbackStatTrak"));
 		return GetFieldPointer<int>(m_nFallbackStatTrak);
 	}
-	int* ItemDefinitionIndex()
+	short* ItemDefinitionIndex()
     {
 	    static int m_iItemDefinitionIndex = NetvarManager::Instance()->GetOffset(XorStr("DT_BaseAttributableItem"), XorStr("m_AttributeManager"), XorStr("m_Item"), XorStr("m_iItemDefinitionIndex"));
-		return GetFieldPointer<int>(m_iItemDefinitionIndex);
+		return GetFieldPointer<short>(m_iItemDefinitionIndex);
     }
 	int* EntityQuality()
 	{
