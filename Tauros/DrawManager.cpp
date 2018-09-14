@@ -32,7 +32,6 @@ bool get_system_font_path(const std::string& name, std::string& path)
     uint32_t valueIndex = 0;
     char valueName[MAX_PATH];
     uint8_t valueData[MAX_PATH];
-    std::wstring wsFontFile;
 
     do {
         uint32_t valueNameSize = MAX_PATH;

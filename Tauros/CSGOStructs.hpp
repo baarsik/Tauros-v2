@@ -47,7 +47,6 @@ public:
 	}
 	CCSWeaponData* GetWeaponData()
 	{
-		if (!this) return nullptr;
 		using CCSWeaponInfo_t = CCSWeaponData*(__thiscall*)(void*);
 		return CallVFunction<CCSWeaponInfo_t>(this, 444)(this);
 	}

@@ -61,7 +61,7 @@ public:
 			if (vMouse.y > 0 && vDelta.y < 0 || vMouse.y < 0 && vDelta.y > 0)
 				vMouse.y *= 1 - Options::g_fAimAssistType2VerticalPenalty / 100.f;
 			else
-				vMouse.x *= boost;
+				vMouse.y *= boost;
 
 			vDelta *= Options::g_fAimAssistType2AcceleratePercentage / 100.f;
 		}

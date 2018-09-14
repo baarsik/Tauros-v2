@@ -72,7 +72,7 @@ private:
 		}
 	}
 
-	void RenderHealth(IDirect3DDevice9* pDevice, C_CSPlayer* pLocal, C_CSPlayer* pTarget, Vector vScreenHead, Vector vScreenOrigin) const
+	void RenderHealth(IDirect3DDevice9* pDevice, C_CSPlayer* pLocal, C_CSPlayer* pTarget, const Vector vScreenHead, const Vector vScreenOrigin) const
 	{
 		const auto isFullEsp = IsFullESPKeyPressed();
 
@@ -102,7 +102,7 @@ private:
 		m_pDrawManager->AddRectFilled(ImVec2(x - 1, y), ImVec2(x + width * healthNormalized + 1, y + height), foreground);
 	}
 
-	void RenderBoxes(IDirect3DDevice9* pDevice, C_CSPlayer* pLocal, C_CSPlayer* pTarget, Vector vScreenHead, Vector vScreenOrigin) const
+	void RenderBoxes(IDirect3DDevice9* pDevice, C_CSPlayer* pLocal, C_CSPlayer* pTarget, const Vector vScreenHead, const Vector vScreenOrigin) const
 	{
 		const auto isFullEsp = IsFullESPKeyPressed();
 
@@ -122,7 +122,7 @@ private:
 		DrawOutlinedRect(vScreenHead.x - width / 2.f, vScreenHead.y, width, height, lineColor);
 	}
 
-	void RenderTop(IDirect3DDevice9* pDevice, C_CSPlayer* pLocal, C_CSPlayer* pTarget, Vector vScreenHead) const
+	void RenderTop(IDirect3DDevice9* pDevice, C_CSPlayer* pLocal, C_CSPlayer* pTarget, const Vector vScreenHead) const
 	{
 		const auto isFullEsp = IsFullESPKeyPressed();
 
@@ -144,7 +144,7 @@ private:
 		DrawString(int(vScreenHead.x), y, 255, 255, 255, 255, true, pInfo.szName, true);
 	}
 	
-	void RenderBottom(IDirect3DDevice9* pDevice, C_CSPlayer* pLocal, C_CSPlayer* pTarget, Vector vScreenOrigin) const
+	void RenderBottom(IDirect3DDevice9* pDevice, C_CSPlayer* pLocal, C_CSPlayer* pTarget, const Vector vScreenOrigin) const
 	{
 		const auto isFullEsp = IsFullESPKeyPressed();
 		if (Options::g_iESPShowDistance == 0 && Options::g_iESPShowWeapon == 0 && !isFullEsp)
@@ -158,16 +158,19 @@ private:
 
 		const auto vOrigin = pTarget->GetOrigin();
 		const auto distance = pLocal->GetOrigin().DistTo(vOrigin);
+		
 		auto pWeapon = pTarget->GetActiveWeapon();
 		char szText[36] = "";
 		if (pWeapon && shouldDrawWeapon)
 		{
-			sprintf(szText, "%s", pWeapon->GetReadableName().c_str());
 			if (shouldDrawDistance)
-				sprintf(szText, "%s (%.0fm)", szText, ceil(distance * 0.0254f));
+				sprintf(szText, "%s (%.0fm)", pWeapon->GetReadableName().c_str(), ceil(distance * 0.0254f));
+			else
+				sprintf(szText, "%s", pWeapon->GetReadableName().c_str());
 		}
 		else if (shouldDrawDistance)
-			sprintf(szText, "%s%.0fm", szText, ceil(distance * 0.0254f));
+			sprintf(szText, "%.0fm", ceil(distance * 0.0254f));
+
 		DrawString(int(vScreenOrigin.x), int(vScreenOrigin.y), 255, 255, 255, 255, true, szText);
 	}
 
@@ -215,7 +218,7 @@ private:
 	}
 
 	// Helpers
-	void DrawOutlinedRect(float x, float y, float width, float height, ImColor color) const
+	void DrawOutlinedRect(float x, float y, float width, float height, const ImColor color) const
 	{
 		const auto x2 = x + width;
 		const auto y2 = y + height;

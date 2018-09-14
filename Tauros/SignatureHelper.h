@@ -4,7 +4,6 @@ using SetClanTag_t          = void(__fastcall*)(const char*, const char*);
 using SetLocalPlayerReady_t = bool(__stdcall*)(const char*);
 using ServerRankRevealAll_t = bool(__cdecl*)(int*);
 using LineThroughSmoke_t    = bool(__cdecl*)(Vector, Vector, int16_t);
-using LoadNamedSky_t        = void(__fastcall*)(const char*);
 
 class SignatureHelper
 {

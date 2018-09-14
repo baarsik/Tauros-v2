@@ -91,7 +91,7 @@ private:
 		if (!Options::g_bTriggerIgnoreSmoke && m_pSignatureHelper->LineThroughSmoke(vTraceStart, trace.endpos))
 			return false;
 
-		if (target && target->GetTeamNum() == pLocal->GetTeamNum() && !Options::g_bDeathmatch)
+		if (target->GetTeamNum() == pLocal->GetTeamNum() && !Options::g_bDeathmatch)
 			return false;
 
 		return true;

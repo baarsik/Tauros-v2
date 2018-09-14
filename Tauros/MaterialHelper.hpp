@@ -53,7 +53,7 @@ private:
 	std::vector<std::string> m_vecNames, m_vecNamesIgnoreZ;
 	std::vector<IMaterial*> m_vecMaterials, m_vecMaterialsIgnoreZ;
 
-	bool AddMaterial(char* viewName, std::string name, std::string shaderName, std::string baseTexture, bool nofog, bool model, bool nocull, bool halflambert)
+	bool AddMaterial(char* viewName, const std::string name, const std::string shaderName, const std::string baseTexture, bool nofog, bool model, bool nocull, bool halflambert)
 	{
 		const auto mat = CreateMaterial(name, shaderName, baseTexture, false, nofog, model, nocull, halflambert);
 		if (!mat || mat->IsErrorMaterial())
@@ -64,7 +64,7 @@ private:
 		return true;
 	}
 
-	bool AddMaterialIgnoreZ(char* viewName, std::string name, std::string shaderName, std::string baseTexture, bool nofog, bool model, bool nocull, bool halflambert)
+	bool AddMaterialIgnoreZ(char* viewName, const std::string name, const std::string shaderName, const std::string baseTexture, bool nofog, bool model, bool nocull, bool halflambert)
 	{
 		const auto mat = CreateMaterial(name, shaderName, baseTexture, true, nofog, model, nocull, halflambert);
 		if (!mat || mat->IsErrorMaterial())
@@ -75,7 +75,7 @@ private:
 		return true;
 	}
 
-	IMaterial* CreateMaterial(std::string name, std::string shaderName, std::string baseTexture, bool ignorez, bool nofog, bool model, bool nocull, bool halflambert) const
+	IMaterial* CreateMaterial(const std::string name, const std::string shaderName, const std::string baseTexture, bool ignorez, bool nofog, bool model, bool nocull, bool halflambert) const
 	{
 		auto matName = XorStr("tauros_") + name;
 		auto filePath = Utils::GetGameDir() + XorStr("csgo\\materials\\") + matName + XorStr(".vmt");

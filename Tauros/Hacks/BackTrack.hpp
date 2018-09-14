@@ -113,7 +113,7 @@ private:
 				continue;
 
 			const auto hitboxPos = Utils::GetEntityBone(pTarget, ECSPlayerBones::HEAD_0);
-			m_headPositions[i][pCmd->command_number % 13] = BacktrackData
+			m_headPositions[i][pCmd->command_number % 12] = BacktrackData
 			{
 				pTarget->GetSimulationTime(),
 				hitboxPos

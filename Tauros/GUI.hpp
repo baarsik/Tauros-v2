@@ -44,7 +44,7 @@ public:
 		SetButtonStyle();
 		style->Colors[ImGuiCol_Text] = ImVec4("#ccccd4");
 		style->Colors[ImGuiCol_TextDisabled] = ImVec4("#3d3b4a");
-		style->Colors[ImGuiCol_WindowBg] = ImVec4("#0f0d12", 0.7f);
+		style->Colors[ImGuiCol_WindowBg] = ImVec4("#0f0d12", 0.85f);
 		style->Colors[ImGuiCol_ChildBg] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
 		style->Colors[ImGuiCol_PopupBg] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f); // ImVec4(0.19f, 0.18f, 0.21f, 1.00f);
 		style->Colors[ImGuiCol_Border] = ImVec4(0.80f, 0.80f, 0.83f, 0.88f);
@@ -110,7 +110,7 @@ public:
 		if (sameLine) ImGui::SameLine(style->WindowPadding.x + ImGui::CalcTextSize((textBefore + text).c_str()).x);
 	}
 
-	void DrawSpecialText(std::string text, std::string textBefore, bool sameLine, ImVec4 color) const
+	void DrawSpecialText(std::string text, std::string textBefore, bool sameLine, const ImVec4 color) const
 	{
 		const auto style = &ImGui::GetStyle();
 		ImGui::TextColored(color, text.c_str());
@@ -174,9 +174,13 @@ public:
 			DrawSpecialText(XorStr("Cerberus"), XorStr(""), true, false);
 			DrawSpecialText(XorStr("."), XorStr("Cerberus"), true, true); 
 			DrawSpecialText(XorStr("Tauros"), XorStr("Cerberus. "), true, ImVec4(1.f, 138.f / 255.f, 0.f, 1.f));
-			DrawSpecialText(std::string(XorStr("(")) + XorStr(__DATE__) + XorStr(")"), XorStr("Cerberus.Tauros "), false, true);
+			DrawSpecialText(std::string(XorStr("(Build date: ")) + XorStr(__DATE__) + XorStr(")"), XorStr("Cerberus.Tauros "), false, true);
 
-			ImGui::TextWrapped(XorStr("\nCerberus.Tauros hack is serving one purpose: provide better competetive matchmaking experiense by giving you extra information and enhancing your skills with software assistance. It is strictly recommended to play only legit settings and refuse from constant bunnyhop usage. Enjoy your legit Global Elite rankup."));
+			ImGui::TextWrapped(XorStr("\nCerberus.Tauros v2 is an internal cheat for Counter-Strike: Global Offensive. The cheat is coded to provide best legit hacking experience. Little or no rage features are and ever will be included."));
+			
+			DrawSpecialText(XorStr("Visit "), XorStr(""), true, true);
+			DrawSpecialText(XorStr("https://github.com/baarsik/Tauros-v2 "), XorStr("Visit "), true, ImVec4(1.f, 138.f / 255.f, 0.f, 1.f));
+			DrawSpecialText(XorStr("for more information"), XorStr("Visit https://github.com/baarsik/Tauros-v2 "), false, true);
 
 			ImGui::Text(XorStr(u8"\nCoded by Барс"));
 			DrawSpecialText(XorStr("Skype: "), XorStr(""), true, true);
@@ -197,30 +201,41 @@ public:
 			ImGui::Combo(XorStr("Type"), &Options::g_iAimAssistType, Options::g_szAimAssistType, IM_ARRAYSIZE(Options::g_szAimAssistType));
 			if (Options::g_iAimAssistType == 2)
 			{
-				const auto aimAssistButtonLength = ImGui::CalcTextSize(XorStr("Legit")).x + ImGui::CalcTextSize(XorStr("Semi-Legit")).x + 96 * m_flAutoScale + 1;
+				const auto presetButtonPadding = 48;
+				const auto aimAssistButtonLength = ImGui::CalcTextSize(XorStr("Preset 1")).x + ImGui::CalcTextSize(XorStr("Preset 2")).x + ImGui::CalcTextSize(XorStr("Preset 3")).x + presetButtonPadding * 3 * m_flAutoScale + 2;
 				auto posStart = ImGui::GetCurrentWindow()->DC.CursorPos;
 				posStart.x -= 1; posStart.y -= 1;
 				auto posEnd = posStart;
-				posEnd.x += aimAssistButtonLength + 2; posEnd.y += 48 * m_flAutoScale + 2;
+				posEnd.x += aimAssistButtonLength + 2; posEnd.y += presetButtonPadding * m_flAutoScale + 2;
 				ImGui::GetCurrentWindow()->DrawList->AddRectFilled(posStart, posEnd, ImGui::GetColorU32(ImVec4("#fb4248")), style->FrameRounding);
-				if (ImGui::ButtonEx(XorStr("Legit"), ImVec2(ImGui::CalcTextSize(XorStr("Legit")).x + 48 * m_flAutoScale, 48 * m_flAutoScale), 0, ImDrawCornerFlags_Left))
+				if (ImGui::ButtonEx(XorStr("Preset 1"), ImVec2(ImGui::CalcTextSize(XorStr("Preset 1")).x + presetButtonPadding * m_flAutoScale, presetButtonPadding * m_flAutoScale), 0, ImDrawCornerFlags_Left))
 				{
 					Options::g_fAimAssistType2AcceleratePercentage = 5.f;
 					Options::g_fAimAssistType2DirectionBoost = 25.f;
-					Options::g_fAimAssistType2FovBoost = 400.f;
-					Options::g_fAimAssistType2HorizontalPenalty = 25.f;
-					Options::g_fAimAssistType2VerticalPenalty = 15.f;
+					Options::g_fAimAssistType2FovBoost = 280.f;
+					Options::g_fAimAssistType2HorizontalPenalty = 33.f;
+					Options::g_fAimAssistType2VerticalPenalty = 23.f;
 					Options::g_bAimAssistType2SniperAlwaysActive = false;
 				}
 				ImGui::SameLine(0, 1.f);
-				if (ImGui::ButtonEx(XorStr("Semi-Legit"), ImVec2(ImGui::CalcTextSize(XorStr("Semi-Legit")).x + 48 * m_flAutoScale, 48 * m_flAutoScale), 0, ImDrawCornerFlags_Right))
+				if (ImGui::ButtonEx(XorStr("Preset 2"), ImVec2(ImGui::CalcTextSize(XorStr("Preset 2")).x + presetButtonPadding * m_flAutoScale, presetButtonPadding * m_flAutoScale), 0, 0))
 				{
-					Options::g_fAimAssistType2AcceleratePercentage = 5.f;
+					Options::g_fAimAssistType2AcceleratePercentage = 10.f;
 					Options::g_fAimAssistType2DirectionBoost = 0.f;
 					Options::g_fAimAssistType2FovBoost = 0.f;
-					Options::g_fAimAssistType2HorizontalPenalty = 66.f;
-					Options::g_fAimAssistType2VerticalPenalty = 66.f;
-					Options::g_bAimAssistType2SniperAlwaysActive = true;
+					Options::g_fAimAssistType2HorizontalPenalty = 50.f;
+					Options::g_fAimAssistType2VerticalPenalty = 50.f;
+					Options::g_bAimAssistType2SniperAlwaysActive = false;
+				}
+				ImGui::SameLine(0, 1.f);
+				if (ImGui::ButtonEx(XorStr("Preset 3"), ImVec2(ImGui::CalcTextSize(XorStr("Preset 3")).x + presetButtonPadding * m_flAutoScale, presetButtonPadding * m_flAutoScale), 0, ImDrawCornerFlags_Right))
+				{
+					Options::g_fAimAssistType2AcceleratePercentage = 3.f;
+					Options::g_fAimAssistType2DirectionBoost = 100.f;
+					Options::g_fAimAssistType2FovBoost = 600.f;
+					Options::g_fAimAssistType2HorizontalPenalty = 33.f;
+					Options::g_fAimAssistType2VerticalPenalty = 50.f;
+					Options::g_bAimAssistType2SniperAlwaysActive = false;
 				}
 
 				ImGui::SliderFloat(XorStr("Accelerate percentage"), &Options::g_fAimAssistType2AcceleratePercentage, 0.f, 100.f, XorStr("%.0f%%"));
@@ -329,22 +344,19 @@ public:
 			ImGui::Checkbox(XorStr("Auto strafe"), &Options::g_bAutoStrafeEnabled);
 			ImGui::Checkbox(XorStr("Auto accept"), &Options::g_bAutoAcceptEnabled);
 		}
-		else if (m_openedWindow == Window::Automation)
-		{
-			ImGui::Columns(3, nullptr, false);
-		}
 		ImGui::End();
 		ImGui::PopFont();
 	}
 
 	bool CheckToggle(bool vecPressedKeys[256])
 	{
-		if (vecPressedKeys[VK_F11] || vecPressedKeys[VK_INSERT])
+		const auto isConsoleButtonPressed = vecPressedKeys[VK_F11] || vecPressedKeys[VK_INSERT];
+		if (isConsoleButtonPressed)
 		{
 			m_bIsClicked = false;
 			m_bIsDown = true;
 		}
-		else if (!vecPressedKeys[VK_F11] && !vecPressedKeys[VK_INSERT] && m_bIsDown)
+		else if (!isConsoleButtonPressed && m_bIsDown)
 		{
 			m_bIsClicked = true;
 			m_bIsDown = false;
