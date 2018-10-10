@@ -53,7 +53,7 @@ Configuration is done by editing Options.cpp file, no config save system is impl
     <td>
       By default Aim Assist is configured to be legit. There are two types of Aim Assist: accelerate and decelerate.
       <br/>1. Accelerate aim assist is traditional type of an aimbot: once enemy is in the radius of aimbot's FOV, the mouse is being moved to the enemy's head.
-      <br/>2. Decelerate aim assist, on the other hand, works like a true aim assist: it almost doesn't aim for you, but it alters your aim speed. When you are aiming correctly (including recoil), it increases your sensitivity. When you are aiming incorrectly, it decreases your sensitivity. As a resuly you will hit more often and miss less often. It is that simple yet very effective.
+      <br/>2. Decelerate aim assist, on the other hand, works like a true aim assist: it almost doesn't aim for you, but it alters your aim speed. When you are aiming correctly (including recoil), it increases your sensitivity. When you are aiming incorrectly, it decreases your sensitivity. As a result you will hit more often and miss less often. It is that simple yet very effective.
     </td>
   </tr>
   <tr>
